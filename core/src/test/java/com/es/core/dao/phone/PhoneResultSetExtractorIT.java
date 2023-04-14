@@ -18,10 +18,10 @@ import static org.junit.Assert.*;
 @ContextConfiguration("/context/applicationContext-core-test.xml")
 public class PhoneResultSetExtractorIT {
 
-    public static final String FIND_ALL_PHONES = "select phones.*, colors.id as colorId, colors.code as colorCode from phones " +
-            "left join phone2color on phone2color.phoneId = phones.id " +
-            "left join colors on colors.id = phone2color.colorId " +
-            "offset ? limit ?";
+    public static final String FIND_ALL_PHONES = "SELECT phones.*, colors.id AS colorId, colors.code AS colorCode FROM phones " +
+            "LEFT JOIN phone2color ON phone2color.phoneId = phones.id " +
+            "LEFT JOIN colors ON colors.id = phone2color.colorId " +
+            "OFFSET ? LIMIT ?";
 
     @Resource
     private JdbcTemplate jdbcTemplate;
