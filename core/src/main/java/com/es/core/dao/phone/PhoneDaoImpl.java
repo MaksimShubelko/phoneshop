@@ -43,8 +43,8 @@ public class PhoneDaoImpl implements PhoneDao {
 
     public static final String FIND_ALL_PHONES = "SELECT phones.*, colors.id AS colorId, colors.code AS colorCode FROM " +
             "(SELECT phones.* FROM phones " +
-            "JOIN stocks ON stocks.phoneId = phones.Id AND stocks.stock > 0 " +
-            "WHERE phones.price IS NOT NULL AND phones.brand ILIKE '%%%s%%' OR " +
+            "JOIN stocks ON stocks.phoneId = phones.Id AND stocks.stock > 0 AND phones.price > 0 " +
+            "WHERE phones.brand ILIKE '%%%s%%' OR " +
             "phones.model ILIKE '%%%s%%' ORDER BY phones.%s %s " +
             "OFFSET ? LIMIT ?) phones " +
             "LEFT JOIN phone2color ON phone2color.phoneId = phones.id " +
@@ -55,6 +55,7 @@ public class PhoneDaoImpl implements PhoneDao {
 
     public static final String GET_COUNT_PHONES_BY_TERM = "SELECT COUNT(*) FROM phones " +
             "JOIN stocks ON phones.Id = stocks.phoneId AND stocks.stock - stocks.reserved > 0 " +
+            "AND phones.price > 0 " +
             "WHERE phones.price IS NOT NULL AND phones.brand ILIKE '%%%s%%' OR " +
             "phones.model ILIKE '%%%s%%'";
 
@@ -87,10 +88,12 @@ public class PhoneDaoImpl implements PhoneDao {
     }
 
     @Override
-    public List<Phone> findAll(int offset, int limit, Object[] params) {
-        String query = String.format(FIND_ALL_PHONES, params);
-        return jdbcTemplate.query(query, phoneResultSetExtractor,
-                new Object[]{offset, limit});
+    public List<Phone> findAll(SearchingParamObject paramObject) {
+        String query = String.format(FIND_ALL_PHONES, paramObject.getTerm(),
+                paramObject.getTerm(),
+                paramObject.getSortBy(),
+                paramObject.getSortOrder());
+        return jdbcTemplate.query(query, phoneResultSetExtractor, paramObject.getOffset(), paramObject.getPhonesPerPage());
     }
 
     @Override
