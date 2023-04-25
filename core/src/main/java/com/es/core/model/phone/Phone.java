@@ -1,7 +1,5 @@
 package com.es.core.model.phone;
 
-import com.es.core.model.phone.Color;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
@@ -274,4 +272,5 @@ public class Phone {
     public void setId(Long id) {
         this.id = id;
     }
+
 }
