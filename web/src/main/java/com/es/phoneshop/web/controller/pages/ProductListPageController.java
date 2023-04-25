@@ -2,6 +2,7 @@ package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.service.cart.CartService;
 import com.es.core.service.phone.PhoneServiceImpl;
+import com.es.core.dao.phone.SearchingParamObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +26,13 @@ public class ProductListPageController {
                                   @RequestParam(value = "sortingType", required = false) String sortingType,
                                   @RequestParam(value = "term", required = false) String term,
                                   Model model) {
-
-        model.addAttribute("phones", phoneService.findAll(page, sortingField, sortingType, term));
+        SearchingParamObject paramObject = SearchingParamObject.newBuilder()
+                .page(page)
+                .sortBy(sortingField)
+                .sortOrder(sortingType)
+                .term(term)
+                .build();
+        model.addAttribute("phones", phoneService.findAll(paramObject));
         model.addAttribute("selectedPage", page);
         model.addAttribute("sortingField", sortingField);
         model.addAttribute("sortingType", sortingType);
@@ -36,4 +42,5 @@ public class ProductListPageController {
 
         return "productList";
     }
+
 }
