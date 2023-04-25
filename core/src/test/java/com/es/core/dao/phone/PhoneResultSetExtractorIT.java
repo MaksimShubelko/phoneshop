@@ -12,7 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration("/context/applicationContext-core-test.xml")
@@ -25,7 +26,7 @@ public class PhoneResultSetExtractorIT {
 
     @Resource
     private JdbcTemplate jdbcTemplate;
-    @Resource
+
     private ResultSetExtractor<List<Phone>> resultSetExtractor;
 
     @Before

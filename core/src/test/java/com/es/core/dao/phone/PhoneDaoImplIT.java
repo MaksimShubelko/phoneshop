@@ -29,7 +29,7 @@ public class PhoneDaoImplIT {
     @Value("${phones.per.page}")
     private int phonesPerPage;
     @Resource
-    private PhoneDao phoneDao = new PhoneDaoImpl();
+    private PhoneDao phoneDao;
 
     private Phone phoneTest;
 
@@ -92,22 +92,48 @@ public class PhoneDaoImplIT {
 
     @Test
     public void findAll_without_sorting_and_paging() {
-        List<Phone> phones = phoneDao.findAll(0, Integer.MAX_VALUE, new String[]{"", "", "id", "ASC"});
+        SearchingParamObject paramObject = SearchingParamObject.newBuilder()
+                .offset(0)
+                .phonesPerPage(Integer.MAX_VALUE)
+                .term("")
+                .sortBy("id")
+                .sortOrder("ASC")
+                .build();
+
+        List<Phone> phones = phoneDao.findAll(paramObject);
 
         assertEquals(10, phones.size());
     }
 
     @Test
     public void findAll_with_paging() {
-        List<Phone> phones = phoneDao.findAll(0, phonesPerPage, new String[]{"", "", "id", "ASC"});
+        SearchingParamObject paramObject = SearchingParamObject.newBuilder()
+                .offset(0)
+                .phonesPerPage(phonesPerPage)
+                .term("")
+                .sortBy("id")
+                .sortOrder("ASC")
+                .build();
+
+        List<Phone> phones = phoneDao.findAll(paramObject);
 
         assertEquals(phonesPerPage, phones.size());
     }
 
     @Test
     public void findAll_with_sorting() {
-        List<Phone> phones = phoneDao.findAll(0, phonesPerPage, new String[]{"", "", "id", "ASC"});
-        List<Phone> sortedPhonesActual = phoneDao.findAll(0, phonesPerPage, new String[]{"", "", "model", "ASC"});
+        SearchingParamObject paramObject = SearchingParamObject.newBuilder()
+                .offset(0)
+                .phonesPerPage(phonesPerPage)
+                .term("")
+                .sortBy("id")
+                .sortOrder("ASC")
+                .build();
+
+        paramObject.setSortBy("model");
+
+        List<Phone> phones = phoneDao.findAll(paramObject);
+        List<Phone> sortedPhonesActual = phoneDao.findAll(paramObject);
         List<Phone> sortedPhonesExpected = phones.stream()
                 .sorted(Comparator.comparing(Phone::getModel))
                 .collect(Collectors.toList());
@@ -119,11 +145,21 @@ public class PhoneDaoImplIT {
 
     @Test
     public void findAll_with_searching() {
+        SearchingParamObject paramObject = SearchingParamObject.newBuilder()
+                .offset(0)
+                .phonesPerPage(Integer.MAX_VALUE)
+                .term("")
+                .sortBy("id")
+                .sortOrder("ASC")
+                .build();
+
         String searchingCriteriaLower = "b";
         String searchingCriteriaUpper = "B";
-        List<Phone> phones = phoneDao.findAll(0, Integer.MAX_VALUE, new String[]{"", "", "id", "ASC"});
-        List<Phone> searchedPhonesActual = phoneDao.findAll(0, Integer.MAX_VALUE,
-                new String[]{searchingCriteriaLower, searchingCriteriaLower, "id", "ASC"});
+        List<Phone> phones = phoneDao.findAll(paramObject);
+
+        paramObject.setTerm(searchingCriteriaLower);
+
+        List<Phone> searchedPhonesActual = phoneDao.findAll(paramObject);
         List<Phone> searchedPhonesExpected = phones.stream()
                 .filter(ph -> ph.getModel().contains(searchingCriteriaLower)
                         || ph.getBrand().contains(searchingCriteriaLower)
@@ -145,7 +181,15 @@ public class PhoneDaoImplIT {
 
     @Test
     public void count_without_searching() {
-        List<Phone> phones = phoneDao.findAll(0, Integer.MAX_VALUE, new String[]{"", "", "id", "ASC"});
+        SearchingParamObject paramObject = SearchingParamObject.newBuilder()
+                .offset(0)
+                .phonesPerPage(Integer.MAX_VALUE)
+                .term("")
+                .sortBy("id")
+                .sortOrder("ASC")
+                .build();
+
+       List<Phone> phones = phoneDao.findAll(paramObject);
 
         int count = phoneDao.count("");
 
@@ -154,7 +198,15 @@ public class PhoneDaoImplIT {
 
     @Test
     public void count_with_searching() {
-        List<Phone> phones = phoneDao.findAll(0, Integer.MAX_VALUE, new String[]{"b", "b", "id", "ASC"});
+        SearchingParamObject paramObject = SearchingParamObject.newBuilder()
+                .offset(0)
+                .phonesPerPage(Integer.MAX_VALUE)
+                .term("b")
+                .sortBy("id")
+                .sortOrder("ASC")
+                .build();
+
+        List<Phone> phones = phoneDao.findAll(paramObject);
 
         int count = phoneDao.count("b");
 
