@@ -6,25 +6,26 @@
 </head>
 <body>
 <title>Product list</title>
-</div>
 <div class="container mt-3">
     <hr class="my-2">
     <div class="container-fluid">
-        <div class="row">
-            <div class="offset-1">
-                <h4>Cart </h4>
-            </div>
+        <a href="${pageContext.request.contextPath}/cart">
+        <div class="offset-1">
+            <h4>Cart</h4>
         </div>
+        </a>
         <div class="row m-auto pe-auto">
             <h6 class="col-sm-1">Items: </h6>
             <div class="col-sm-1" id="totalQuantity">${cart.totalQuantity} </div>
         </div>
+
         <div class="row m-0 p-0">
             <h6 class="col-sm-1">Price:</h6>
             <div class="col-sm-1" id="totalPrice">${cart.totalPrice}</div>
             <h6 class="col-sm-1">$</h6>
         </div>
     </div>
+
     <div class="clearfix">
         <h2 class="float-start">Phones</h2>
         <form action="${pageContext.request.contextPath}/productList" class="float-end">
@@ -65,8 +66,10 @@
             <c:forEach var="phone" items="${phones}">
                 <tr>
                     <td class="col-2">
-                        <img class="img-small"
-                             src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
+                        <a href="${pageContext.request.contextPath}/productDetails/${phone.id}">
+                            <img class="img-small"
+                                 src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
+                        </a>
                     </td>
                     <td class="col-2">${phone.brand}</td>
                     <td class="col-2">${phone.model}</td>
@@ -89,6 +92,7 @@
                         <input type="button" onclick="addToCartAjax(${phone.id})" value="To cart">
                     </td>
                 </tr>
+                <c:set var="dto"></c:set>
             </c:forEach>
         </table>
     </div>
