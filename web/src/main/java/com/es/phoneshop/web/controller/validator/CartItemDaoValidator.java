@@ -30,13 +30,9 @@ public class CartItemDaoValidator implements Validator {
         ValidationUtils.rejectIfEmpty(errors, "phoneId", EMPTY_PHONE_ID_MESSAGE);
         ValidationUtils.rejectIfEmpty(errors, "quantity", EMPTY_QUANTITY_MESSAGE);
 
-        try {
-            long quantity = Long.parseLong(cartItemDto.getQuantity());
-            if (quantity < 1) {
-                errors.rejectValue("quantity", NEGATIVE_QUANTITY_ERR_CODE, NEGATIVE_QUANTITY_MESSAGE);
-            }
-        } catch (NumberFormatException e) {
-            errors.rejectValue("quantity", INCORRECT_INPUT_ERR_CODE, INCORRECT_INPUT_FORMAT_MESSAGE);
+        long quantity = cartItemDto.getQuantity();
+        if (quantity < 1) {
+            errors.rejectValue("quantity", NEGATIVE_QUANTITY_ERR_CODE, NEGATIVE_QUANTITY_MESSAGE);
         }
 
     }

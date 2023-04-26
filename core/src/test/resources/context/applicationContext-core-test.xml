@@ -29,9 +29,13 @@
     <bean id="cart" class="com.es.core.model.cart.Cart">
     </bean>
 
+    <bean id="stockDao" class="com.es.core.dao.stock.StockDaoImpl"/>
+
     <bean id="phoneDao" class="com.es.core.dao.phone.PhoneDaoImpl"/>
 
     <bean id="phoneResultSetExtractor" class="com.es.core.dao.phone.PhoneResultSetExtractor"/>
+
+    <bean id="stockResultSetExtractor" class="com.es.core.dao.stock.StockResultSetExtractor"/>
 
     <jdbc:initialize-database enabled="${db.insertSchema}" data-source="dataSource">
         <jdbc:script location="classpath:db/schema-test.sql"/>

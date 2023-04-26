@@ -36,8 +36,10 @@
     </bean>
 
     <bean id="phoneResultSetExtractor" class="com.es.core.dao.phone.PhoneResultSetExtractor"/>
+    <bean id="stockResultSetExtractor" class="com.es.core.dao.stock.StockResultSetExtractor"/>
 
     <bean id="phoneDao" class="com.es.core.dao.phone.PhoneDaoImpl"/>
+    <bean id="stockDao" class="com.es.core.dao.stock.StockDaoImpl"/>
 
     <jdbc:initialize-database enabled="${db.insertSchema}" data-source="dataSource">
         <jdbc:script location="classpath:db/schema.sql"/>
