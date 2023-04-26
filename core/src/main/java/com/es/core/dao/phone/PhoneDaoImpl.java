@@ -1,7 +1,6 @@
 package com.es.core.dao.phone;
 
 import com.es.core.model.phone.Phone;
-import com.es.core.model.phone.Color;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -12,8 +11,10 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 
 @Component
 public class PhoneDaoImpl implements PhoneDao {
@@ -22,14 +23,14 @@ public class PhoneDaoImpl implements PhoneDao {
             "LEFT JOIN colors ON colors.id = phone2color.colorId WHERE phones.id = ?";
     public static final String INSERT_PHONE = "INSERT INTO phones (id, brand, model, price, displaySizeInches, weightGr, lengthMm, " +
             "widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity, " +
-                        "displayTechnology, backCameraMegapixels, frontCameraMegapixels, " +
-                        "ramGb, internalStorageGb, batteryCapacityMah, " +
-                        "talkTimeHours, standByTimeHours, bluetooth, positioning, imageUrl, description) " +
-                        "VALUES (:id, :brand, :model, :price, :displaySizeInches, :weightGr, :lengthMm, " +
-                        ":widthMm, :heightMm, :announced, :deviceType, :os, :displayResolution, :pixelDensity, " +
-                        ":displayTechnology, :backCameraMegapixels, :frontCameraMegapixels, " +
-                        ":ramGb, :internalStorageGb, :batteryCapacityMah, " +
-                        ":talkTimeHours, :standByTimeHours, :bluetooth, :positioning, :imageUrl, :description)";
+            "displayTechnology, backCameraMegapixels, frontCameraMegapixels, " +
+            "ramGb, internalStorageGb, batteryCapacityMah, " +
+            "talkTimeHours, standByTimeHours, bluetooth, positioning, imageUrl, description) " +
+            "VALUES (:id, :brand, :model, :price, :displaySizeInches, :weightGr, :lengthMm, " +
+            ":widthMm, :heightMm, :announced, :deviceType, :os, :displayResolution, :pixelDensity, " +
+            ":displayTechnology, :backCameraMegapixels, :frontCameraMegapixels, " +
+            ":ramGb, :internalStorageGb, :batteryCapacityMah, " +
+            ":talkTimeHours, :standByTimeHours, :bluetooth, :positioning, :imageUrl, :description)";
     public static final String UPDATE_PHONE = "UPDATE phones SET brand = :brand, model = :model, price = :price, " +
             "displaySizeInches = :displaySizeInches, weightGr = :weightGr, lengthMm = :lengthMm, " +
             "widthMm = :widthMm, heightMm = :heightMm, announced = :announced, deviceType = :deviceType, " +
@@ -39,15 +40,24 @@ public class PhoneDaoImpl implements PhoneDao {
             "ramGb = :ramGb, internalStorageGb = :internalStorageGb, batteryCapacityMah = :batteryCapacityMah, " +
             "talkTimeHours = :talkTimeHours, standByTimeHours = :standByTimeHours, bluetooth = :bluetooth, " +
             "positioning = :positioning, imageUrl = :imageUrl, description = :description WHERE id = :id";
-    public static final String DELETE_PHONE_COLORS = "DELETE FROM phone2color WHERE phoneId = ?";
 
-    public static final String INSERT_PHONES_COLORS_FOR_PHONE_BY_ID = "INSERT INTO phone2color (phoneId, colorId) " +
-            "VALUES (?, ?)";
-
-    public static final String FIND_ALL_PHONES = "SELECT phones.*, colors.id AS colorId, colors.code AS colorCode FROM phones " +
+    public static final String FIND_ALL_PHONES = "SELECT phones.*, colors.id AS colorId, colors.code AS colorCode FROM " +
+            "(SELECT phones.* FROM phones " +
+            "JOIN stocks ON stocks.phoneId = phones.Id AND stocks.stock > 0 AND phones.price > 0 " +
+            "WHERE phones.brand ILIKE '%%%s%%' OR " +
+            "phones.model ILIKE '%%%s%%' ORDER BY phones.%s %s " +
+            "OFFSET ? LIMIT ?) phones " +
             "LEFT JOIN phone2color ON phone2color.phoneId = phones.id " +
-            "LEFT JOIN colors ON colors.id = phone2color.colorId " +
-            "OFFSET ? LIMIT ?";
+            "LEFT JOIN colors ON colors.id = phone2color.colorId";
+
+    public static final String GET_COUNT_ALL_PHONES = "SELECT COUNT(*) FROM phones " +
+            "JOIN stocks ON phones.Id = stocks.phoneId AND stocks.stock - stocks.reserved > 0";
+
+    public static final String GET_COUNT_PHONES_BY_TERM = "SELECT COUNT(*) FROM phones " +
+            "JOIN stocks ON phones.Id = stocks.phoneId AND stocks.stock - stocks.reserved > 0 " +
+            "AND phones.price > 0 " +
+            "WHERE phones.price IS NOT NULL AND phones.brand ILIKE '%%%s%%' OR " +
+            "phones.model ILIKE '%%%s%%'";
 
     @Resource
     private JdbcTemplate jdbcTemplate;
@@ -75,13 +85,25 @@ public class PhoneDaoImpl implements PhoneDao {
         } else {
             update(phone);
         }
-        insertColors(phone);
     }
 
     @Override
-    public List<Phone> findAll(int offset, int limit) {
+    public List<Phone> findAll(SearchingParamObject paramObject) {
+        String query = String.format(FIND_ALL_PHONES, paramObject.getTerm(),
+                paramObject.getTerm(),
+                paramObject.getSortBy(),
+                paramObject.getSortOrder());
+        return jdbcTemplate.query(query, phoneResultSetExtractor, paramObject.getOffset(), paramObject.getPhonesPerPage());
+    }
 
-        return jdbcTemplate.query(FIND_ALL_PHONES, phoneResultSetExtractor, new Object[]{offset, limit});
+    @Override
+    public int count(String term) {
+        if (Objects.isNull(term) || term.isBlank()) {
+            return jdbcTemplate.queryForObject(GET_COUNT_ALL_PHONES, Integer.class);
+        } else {
+            return jdbcTemplate.queryForObject(String.format(GET_COUNT_PHONES_BY_TERM, term, term), Integer.class);
+        }
+
     }
 
     private void insert(Phone phone) {
@@ -94,21 +116,6 @@ public class PhoneDaoImpl implements PhoneDao {
     private void update(Phone phone) {
         SqlParameterSource namedParamsPhone = new BeanPropertySqlParameterSource(phone);
         namedParameterJdbcTemplate.update(UPDATE_PHONE, namedParamsPhone);
-        deleteColors(phone);
-    }
-
-    private void deleteColors(Phone phone) {
-        jdbcTemplate.update(DELETE_PHONE_COLORS, phone.getId());
-    }
-
-    private void insertColors(Phone phone) {
-        Long phoneId = phone.getId();
-        Set<Color> colors = phone.getColors();
-
-        List<Object[]> phoneColors = colors.stream()
-                .map(cl -> new Object[]{phoneId, cl.getId()})
-                .collect(Collectors.toList());
-        jdbcTemplate.batchUpdate(INSERT_PHONES_COLORS_FOR_PHONE_BY_ID, phoneColors);
     }
 
 }
