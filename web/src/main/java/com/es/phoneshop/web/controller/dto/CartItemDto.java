@@ -1,12 +1,9 @@
 package com.es.phoneshop.web.controller.dto;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
-
 public class CartItemDto {
     private Long phoneId;
 
-    private String quantity;
+    private Long quantity;
 
     public Long getPhoneId() {
         return phoneId;
@@ -16,11 +13,11 @@ public class CartItemDto {
         this.phoneId = phoneId;
     }
 
-    public String getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(Long quantity) {
         this.quantity = quantity;
     }
 }

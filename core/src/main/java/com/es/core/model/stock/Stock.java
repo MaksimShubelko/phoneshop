@@ -1,4 +1,6 @@
-package com.es.core.model.phone;
+package com.es.core.model.stock;
+
+import com.es.core.model.phone.Phone;
 
 public class Stock {
     private Phone phone;
