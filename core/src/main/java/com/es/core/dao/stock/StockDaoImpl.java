@@ -37,11 +37,7 @@ public class StockDaoImpl implements StockDao {
 
         Stock stock = jdbcTemplate.query(GET_STOCK_BY_PHONE_ID, stockResultSetExtractor, phoneId);
 
-        if (Objects.isNull(stock)) {
-            return Optional.empty();
-        }
-
-        return Optional.of(stock);
+        return Optional.ofNullable(stock);
     }
 
     @Override

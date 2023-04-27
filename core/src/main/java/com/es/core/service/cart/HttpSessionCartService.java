@@ -43,12 +43,9 @@ public class HttpSessionCartService implements CartService {
         }
 
         Optional<Phone> phoneOptional = phoneDao.get(phoneId);
-        if (phoneOptional.isEmpty()) {
-            throw new UnknownProductException();
-        }
-        Phone phone = phoneOptional.get();
-        Optional<CartItem> cartItem = getItemFromCart(phone);
+        Phone phone = phoneOptional.orElseThrow(UnknownProductException::new);
 
+        Optional<CartItem> cartItem = getItemFromCart(phone);
         if (cartItem.isPresent()) {
             addItemToCart(cartItem.get(), quantity);
         } else {
@@ -59,11 +56,9 @@ public class HttpSessionCartService implements CartService {
     private void addItemToCart(CartItem cartItem, Long quantity) {
         Optional<Stock> stockOptional = stockDao.getByPhoneId(cartItem.getPhone().getId());
         long totalQuantity = cartItem.getQuantity() + quantity;
-        long availableQuantity = 0;
+        long availableQuantity;
 
-        if (stockOptional.isPresent()) {
-            availableQuantity = stockOptional.get().getStock();
-        }
+        availableQuantity = stockOptional.map(Stock::getStock).orElse(0);
 
         if (availableQuantity < totalQuantity) {
             throw new OutOfStockException();
@@ -83,12 +78,9 @@ public class HttpSessionCartService implements CartService {
 
     private void updateItem(Long phoneId, Long quantity) {
         Optional<Stock> stockOptional = stockDao.getByPhoneId(phoneId);
+        Stock stock = stockOptional.orElseThrow(OutOfStockException::new);
 
-        if (stockOptional.isEmpty()) {
-            throw new UnknownProductException();
-        }
-
-        Integer availableQuantity = stockOptional.get().getStock();
+        Integer availableQuantity = stock.getStock();
 
         if (Objects.isNull(availableQuantity)) {
             availableQuantity = 0;
@@ -108,11 +100,9 @@ public class HttpSessionCartService implements CartService {
                 .filter(it -> it.getPhone().getId().equals(phoneId))
                 .findFirst();
 
-        if (item.isEmpty()) {
-            throw new UnknownProductException();
-        }
+        CartItem cartItem = item.orElseThrow(UnknownProductException::new);
 
-        cart.getItems().remove(item.get());
+        cart.getItems().remove(cartItem);
         updateCartInformation();
     }
 

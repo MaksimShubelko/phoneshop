@@ -6,9 +6,8 @@ import java.util.Optional;
 
 public interface StockDao {
 
-    Optional<Stock>  getByPhoneId(Long phoneId);
+    Optional<Stock> getByPhoneId(Long phoneId);
 
     void save(Stock stock);
-
 
 }
