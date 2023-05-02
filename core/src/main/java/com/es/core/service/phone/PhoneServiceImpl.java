@@ -4,6 +4,7 @@ import com.es.core.dao.phone.PhoneDao;
 import com.es.core.dao.phone.SearchingParamObject;
 import com.es.core.exception.UnknownProductException;
 import com.es.core.model.phone.Phone;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,17 +12,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class PhoneServiceImpl implements PhoneService {
 
     @Value("${phones.per.page}")
     private int phonesPerPage;
 
-    private PhoneDao phoneDao;
-
-    public PhoneServiceImpl(PhoneDao phoneDao) {
-        this.phoneDao = phoneDao;
-    }
+    private final PhoneDao phoneDao;
 
     public void setPhonesPerPage(int phonesPerPage) {
         this.phonesPerPage = phonesPerPage;

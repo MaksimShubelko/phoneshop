@@ -77,7 +77,6 @@ public class HttpSessionCartServiceTest {
         when(phoneDao.get(anyLong())).thenReturn(Optional.of(phone));
         when(stockDao.getByPhoneId(0L)).thenReturn(Optional.of(stock));
         when(stock.getStock()).thenReturn(10);
-        when(cartItem.getQuantity()).thenReturn(1L);
 
         cartService.addPhone(0L, 1L);
 
@@ -91,7 +90,6 @@ public class HttpSessionCartServiceTest {
     public void update() {
         Map map = mock(Map.class);
         Stock stock = mock(Stock.class);
-        when(stockDao.getByPhoneId(0L)).thenReturn(Optional.of(stock));
 
         cartService.update(map);
 
@@ -112,7 +110,6 @@ public class HttpSessionCartServiceTest {
         List<CartItem> cartItemList = new ArrayList<>(List.of(new CartItem(phone, 0L)));
         CartItem cartItem = mock(CartItem.class);
         when(cart.getItems()).thenReturn(cartItemList);
-        when(cartItem.getPhone()).thenReturn(phone);
 
         cartService.remove(0L);
 

@@ -37,7 +37,7 @@ public class OrderServiceImplTest {
     @Mock
     private CartService cartService;
     @InjectMocks
-    private OrderServiceImpl orderService = new OrderServiceImpl();
+    private OrderServiceImpl orderService;
 
     @Test
     public void get() {
@@ -69,9 +69,8 @@ public class OrderServiceImplTest {
         orderItem.setQuantity(0L);
         Stock stock = mock(Stock.class);
 
-        when(stockDao.getByPhoneId(anyLong())).thenReturn(Optional.of(stock));
-        when(stock.getStock()).thenReturn(1);
-
         orderService.placeOrder(order);
+
+        verify(orderDao, times(1)).save(order);
     }
 }

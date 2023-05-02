@@ -100,7 +100,7 @@
              Contact phone number: ${order.contactPhoneNo}
         </div>
         <div class="row">
-              Additional information: ${order.additionalInf}
+              Additional information: ${order.additionalInf == null ? '-' : order.additionalInf}
         </div>
     </c:if>
 

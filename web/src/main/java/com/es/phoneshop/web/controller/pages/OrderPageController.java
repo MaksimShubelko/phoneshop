@@ -22,15 +22,14 @@ import javax.validation.Valid;
 
 @Controller
 @AllArgsConstructor
-@NoArgsConstructor
 @RequestMapping(value = "/order")
 public class OrderPageController {
 
-    private OrderService orderService;
+    private final OrderService orderService;
 
-    private CartService cartService;
+    private final CartService cartService;
 
-    private OrderMapper orderMapper;
+    private final OrderMapper orderMapper;
     @GetMapping
     public String getOrder(Model model) {
         Order order = orderService.createOrder(cartService.getCart());

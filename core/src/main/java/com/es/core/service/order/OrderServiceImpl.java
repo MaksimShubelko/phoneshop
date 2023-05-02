@@ -11,6 +11,7 @@ import com.es.core.model.stock.Stock;
 import com.es.core.service.cart.CartService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,17 +23,16 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Setter
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private StockDao stockDao;
+    private final StockDao stockDao;
 
-    private OrderDao orderDao;
+    private final OrderDao orderDao;
 
-    private CartService cartService;
+    private final CartService cartService;
 
     @Value("${delivery.price}")
     private BigDecimal deliveryPrice;
