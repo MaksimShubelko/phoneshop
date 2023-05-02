@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <head>
     <tags:templates/>
+    <tags:msg/>
 </head>
 <body>
 <title>Cart</title>
@@ -13,8 +14,7 @@
     <form method="get" action="${pageContext.request.contextPath}/productList">
         <input type="submit" class="button button-primary" value="Back to products"/>
     </form>
-
-    <c:if test="${cart.items.size() == 0}">
+    <c:if test="${cartItems.size() == 0}">
         Cart empty
     </c:if>
 
@@ -86,6 +86,9 @@
                 </tbody>
             </table>
             <button type="submit">Update</button>
+            <a href="${pageContext.request.contextPath}/order">
+                <button type="button">Order</button>
+            </a>
         </c:if>
     </form:form>
 </div>

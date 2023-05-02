@@ -8,6 +8,24 @@ public class OrderItem {
     private Order order;
     private Long quantity;
 
+    public OrderItem(Phone phone, Order order, Long quantity) {
+        this.phone = phone;
+        this.order = order;
+        this.quantity = quantity;
+    }
+
+    public OrderItem() {
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Phone getPhone() {
         return phone;
     }
