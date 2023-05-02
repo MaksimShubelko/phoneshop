@@ -14,13 +14,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HttpSessionCartServiceTest {
@@ -110,5 +117,14 @@ public class HttpSessionCartServiceTest {
         cartService.remove(0L);
 
         verify(cart, times(4)).getItems();
+    }
+
+    @Test
+    public void clear() {
+        cartService.clear();
+
+        verify(cart, times(1)).setTotalQuantity(0L);
+        verify(cart, times(1)).setTotalPrice(BigDecimal.ZERO);
+        verify(cart, times(1)).setItems(Collections.emptyList());
     }
 }
