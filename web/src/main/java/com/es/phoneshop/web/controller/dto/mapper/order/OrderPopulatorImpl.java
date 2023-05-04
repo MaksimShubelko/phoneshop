@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component
-public class OrderMapperImpl implements OrderMapper {
+public class OrderPopulatorImpl implements OrderPopulator {
     @Override
-    public void map(OrderDto dto, Order order) {
+    public void populate(OrderDto dto, Order order) {
         if (Objects.isNull(dto) || Objects.isNull(order)) {
             return;
         }
