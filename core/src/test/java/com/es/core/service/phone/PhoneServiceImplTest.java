@@ -61,7 +61,7 @@ public class PhoneServiceImplTest {
         int countPages = phoneService.getCountPages(anyString());
 
         verify(phoneDao, Mockito.times(1)).count(anyString());
-        assertEquals(countPages, anyInt());
+        assertEquals(countPages, 1);
     }
 
     @Test

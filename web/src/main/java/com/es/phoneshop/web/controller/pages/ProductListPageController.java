@@ -42,5 +42,4 @@ public class ProductListPageController {
 
         return "productList";
     }
-
 }

@@ -12,6 +12,7 @@ import com.es.core.model.stock.Stock;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -104,6 +105,13 @@ public class HttpSessionCartService implements CartService {
 
         cart.getItems().remove(cartItem);
         updateCartInformation();
+    }
+
+    @Override
+    public void clear() {
+        cart.setTotalQuantity(0L);
+        cart.setTotalPrice(BigDecimal.ZERO);
+        cart.setItems(Collections.emptyList());
     }
 
     private Optional<CartItem> getItemFromCart(Phone phone) {

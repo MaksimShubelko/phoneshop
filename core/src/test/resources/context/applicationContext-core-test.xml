@@ -37,6 +37,8 @@
 
     <bean id="stockResultSetExtractor" class="com.es.core.dao.stock.StockResultSetExtractor"/>
 
+    <bean id="orderDao" class="com.es.core.dao.order.OrderDaoImpl"/>
+
     <jdbc:initialize-database enabled="${db.insertSchema}" data-source="dataSource">
         <jdbc:script location="classpath:db/schema-test.sql"/>
         <jdbc:script location="classpath:db/demodata-phones-test.sql"/>
