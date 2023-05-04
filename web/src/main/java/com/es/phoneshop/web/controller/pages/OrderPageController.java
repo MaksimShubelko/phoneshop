@@ -5,9 +5,8 @@ import com.es.core.model.order.Order;
 import com.es.core.service.cart.CartService;
 import com.es.core.service.order.OrderService;
 import com.es.phoneshop.web.controller.dto.OrderDto;
-import com.es.phoneshop.web.controller.dto.mapper.order.OrderMapper;
+import com.es.phoneshop.web.controller.dto.mapper.order.OrderPopulator;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,7 +28,7 @@ public class OrderPageController {
 
     private final CartService cartService;
 
-    private final OrderMapper orderMapper;
+    private final OrderPopulator orderPopulator;
     @GetMapping
     public String getOrder(Model model) {
         Order order = orderService.createOrder(cartService.getCart());
@@ -57,7 +56,7 @@ public class OrderPageController {
         }
 
         Order order = orderService.createOrder(cartService.getCart());
-        orderMapper.map(orderDto, order);
+        orderPopulator.populate(orderDto, order);
         orderService.placeOrder(order);
 
         return "redirect:/orderOverview/" + order.getId();

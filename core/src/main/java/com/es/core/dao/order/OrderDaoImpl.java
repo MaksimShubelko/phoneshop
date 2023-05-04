@@ -19,9 +19,9 @@ import java.util.UUID;
 
 @Component
 public class OrderDaoImpl implements OrderDao {
-    private static final String FIND_ORDER_BY_ID = "SELECT * FROM orders WHERE id = %s";
+    private static final String FIND_ORDER_BY_ID = "SELECT * FROM orders WHERE id = ?";
 
-    private static final String FIND_ITEMS_BY_ORDER_ID = "SELECT * FROM orderItems WHERE orderItems.orderId = %s";
+    private static final String FIND_ITEMS_BY_ORDER_ID = "SELECT * FROM orderItems WHERE orderItems.orderId = ?";
 
     private static final String UPDATE_ORDER = "UPDATE orders SET orders.subtotal = :subtotal, orders.deliveryPrice = :deliveryPrice, " +
             "orders.totalPrice = :totalPrice, orders.firstName = :firstName, orders.lastName = :lastName, orders.contactPhoneNo = :contactPhoneNo, " +
@@ -55,9 +55,9 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     public Optional<Order> getById(UUID uuid) {
-        Order order = jdbcTemplate.query(String.format(FIND_ORDER_BY_ID, "'" + uuid + "'"), orderResultSetExtractor);
-        List<OrderItem> orderItems = jdbcTemplate.query(String.format(FIND_ITEMS_BY_ORDER_ID, "'" + uuid + "'"),
-                orderItemsResultSetExtractor);
+        Order order = jdbcTemplate.query(FIND_ORDER_BY_ID, orderResultSetExtractor, uuid);
+        List<OrderItem> orderItems = jdbcTemplate.query(FIND_ITEMS_BY_ORDER_ID,
+                orderItemsResultSetExtractor, uuid);
         orderItems.forEach(item -> item
                 .setPhone(phoneDao.get(item.getPhone().getId()).orElseThrow(UnknownProductException::new)));
 
