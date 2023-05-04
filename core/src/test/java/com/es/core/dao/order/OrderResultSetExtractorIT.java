@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration("/context/applicationContext-core-test.xml")

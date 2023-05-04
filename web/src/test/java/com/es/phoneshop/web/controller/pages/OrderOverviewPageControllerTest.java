@@ -28,7 +28,7 @@ public class OrderOverviewPageControllerTest {
     private OrderService orderService;
 
     @InjectMocks
-    private OrderOverviewPageController orderOverviewPageController = new OrderOverviewPageController();
+    private OrderOverviewPageController orderOverviewPageController;
 
     @Before
     public void setUp() throws Exception {

@@ -5,7 +5,7 @@ import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
 import com.es.core.service.cart.CartService;
 import com.es.core.service.order.OrderService;
-import com.es.phoneshop.web.controller.dto.mapper.order.OrderMapper;
+import com.es.phoneshop.web.controller.dto.mapper.order.OrderPopulator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,10 +42,10 @@ public class OrderPageControllerTest {
     private CartService cartService;
 
     @Mock
-    private OrderMapper orderMapper;
+    private OrderPopulator orderPopulator;
 
     @InjectMocks
-    private OrderPageController orderPageController = new OrderPageController();
+    private OrderPageController orderPageController;
 
     @Before
     public void setUp() throws Exception {
