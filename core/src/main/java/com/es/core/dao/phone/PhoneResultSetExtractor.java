@@ -69,6 +69,5 @@ public class PhoneResultSetExtractor implements ResultSetExtractor<List<Phone>> 
         phone.setPositioning(resultSet.getString("positioning"));
         phone.setImageUrl(resultSet.getString("imageUrl"));
         phone.setDescription(resultSet.getString("description"));
-
     }
 }
