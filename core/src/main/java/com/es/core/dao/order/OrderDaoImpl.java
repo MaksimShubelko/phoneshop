@@ -1,6 +1,7 @@
 package com.es.core.dao.order;
 
 import com.es.core.dao.phone.PhoneDao;
+import com.es.core.exception.UnknownOrderException;
 import com.es.core.exception.UnknownProductException;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
@@ -9,6 +10,8 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -21,15 +24,21 @@ import java.util.UUID;
 public class OrderDaoImpl implements OrderDao {
     private static final String FIND_ORDER_BY_ID = "SELECT * FROM orders WHERE id = ?";
 
-    private static final String FIND_ITEMS_BY_ORDER_ID = "SELECT * FROM orderItems WHERE orderItems.orderId = ?";
+    private static final String FIND_ORDER_BY_UUID = "SELECT * FROM orders WHERE uuid = ?";
+
+    private static final String FIND_ITEMS_BY_ORDER_ID = "SELECT o.*, p.id AS phoneId, p.model, p.brand, p.displaySizeInches, p.price, " +
+            "colors.id AS colorId, colors.code AS colorCode FROM orderItems o " +
+            "JOIN phones p ON o.phoneId = p.id " +
+            "LEFT JOIN phone2color ON phone2color.phoneId = p.id " +
+            "LEFT JOIN colors ON colors.id = phone2color.colorId AND o.orderId = ?";
 
     private static final String UPDATE_ORDER = "UPDATE orders SET orders.subtotal = :subtotal, orders.deliveryPrice = :deliveryPrice, " +
             "orders.totalPrice = :totalPrice, orders.firstName = :firstName, orders.lastName = :lastName, orders.contactPhoneNo = :contactPhoneNo, " +
-            "additionalInf = :additionalInf, orders.status = :status";
+            "additionalInf = :additionalInf, orders.status = :status WHERE orders.id = :id";
 
-    private static final String INSERT_ORDER = "INSERT INTO orders (id, serialNo, subtotal, deliveryPrice, " +
+    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, serialNo, subtotal, deliveryPrice, " +
             "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, status) VALUES " +
-            "(:id, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
+            "(:uuid, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
             ":deliveryAddress, :contactPhoneNo, :additionalInf, :status)";
 
     private static final String SELECT_MAX_SERIAL_NO = "SELECT MAX(serialNo) FROM orders";
@@ -54,17 +63,17 @@ public class OrderDaoImpl implements OrderDao {
 
 
     @Override
-    public Optional<Order> getById(UUID uuid) {
-        Order order = jdbcTemplate.query(FIND_ORDER_BY_ID, orderResultSetExtractor, uuid);
+    public Optional<Order> getById(Long id) {
+        Order order = jdbcTemplate.query(FIND_ORDER_BY_ID, orderResultSetExtractor, id);
         List<OrderItem> orderItems = jdbcTemplate.query(FIND_ITEMS_BY_ORDER_ID,
-                orderItemsResultSetExtractor, uuid);
-        orderItems.forEach(item -> item
-                .setPhone(phoneDao.get(item.getPhone().getId()).orElseThrow(UnknownProductException::new)));
+                orderItemsResultSetExtractor, id);
 
         order.setOrderItems(orderItems);
 
         return Optional.of(order);
     }
+
+
 
     @Override
     public void save(Order order) {
@@ -74,6 +83,18 @@ public class OrderDaoImpl implements OrderDao {
         } else {
             update(order);
         }
+    }
+
+    @Override
+    public Optional<Order> getByUuid(UUID uuid) {
+        Order order = jdbcTemplate.query(FIND_ORDER_BY_UUID, orderResultSetExtractor, uuid);
+        if (order != null) {
+            List<OrderItem> orderItems = jdbcTemplate.query(FIND_ITEMS_BY_ORDER_ID,
+                    orderItemsResultSetExtractor, order.getId());
+            order.setOrderItems(orderItems);
+        }
+
+        return Optional.ofNullable(order);
     }
 
     private void update(Order order) {
@@ -86,10 +107,12 @@ public class OrderDaoImpl implements OrderDao {
         if (Objects.isNull(maxSerialNo)) {
             maxSerialNo = 0L;
         }
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         order.setSerialNo(++maxSerialNo);
-        order.setId(UUID.randomUUID());
+        order.setUuid(UUID.randomUUID());
         SqlParameterSource namedParamsOrder = new BeanPropertySqlParameterSource(order);
-        namedParameterJdbcTemplate.update(INSERT_ORDER, namedParamsOrder);
+        namedParameterJdbcTemplate.update(INSERT_ORDER, namedParamsOrder, keyHolder);
+        order.setId(keyHolder.getKey().longValue());
     }
 
     private void insertOrderItems(Order order) {

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -24,11 +25,11 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration("/context/applicationContext-core-test.xml")
 public class OrderResultSetExtractorIT {
 
-    private static final String FIND_ORDER_BY_ID = "SELECT * FROM orders WHERE id = %s";
+    private static final String FIND_ORDER_BY_ID = "SELECT * FROM orders WHERE id = ?";
 
-    private static final String INSERT_ORDER = "INSERT INTO orders (id, serialNo, subtotal, deliveryPrice, " +
+    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, serialNo, subtotal, deliveryPrice, " +
             "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, status) VALUES " +
-            "(:id, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
+            "(:uuid, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
             ":deliveryAddress, :contactPhoneNo, :additionalInf, :status)";
 
     @Resource
@@ -43,13 +44,15 @@ public class OrderResultSetExtractorIT {
 
     private UUID uuid;
 
+    private Long id;
+
     @Before
     public void setUp() throws Exception {
         orderResultSetExtractor = new OrderResultSetExtractor();
 
         order = new Order();
         uuid = UUID.randomUUID();
-        order.setId(uuid);
+        order.setUuid(uuid);
         order.setSubtotal(BigDecimal.ZERO);
         order.setDeliveryPrice(BigDecimal.ZERO);
         order.setTotalPrice(BigDecimal.ZERO);
@@ -61,13 +64,16 @@ public class OrderResultSetExtractorIT {
         order.setAdditionalInf("additionalInf");
         order.setSerialNo(1L);
 
-        SqlParameterSource namedParamsPhone = new BeanPropertySqlParameterSource(order);
-        namedParameterJdbcTemplate.update(INSERT_ORDER, namedParamsPhone);
+        SqlParameterSource namedParamsOrder = new BeanPropertySqlParameterSource(order);
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update(INSERT_ORDER, namedParamsOrder, generatedKeyHolder);
+        id = generatedKeyHolder.getKey().longValue();
+        order.setId(id);
     }
 
     @Test
     public void extractData() {
-        Order order = jdbcTemplate.query(String.format(FIND_ORDER_BY_ID, "'" + uuid + "'"), orderResultSetExtractor);
+        Order order = jdbcTemplate.query(FIND_ORDER_BY_ID, orderResultSetExtractor, id);
 
         assertNotNull(order.getId());
         assertNotNull(order.getSerialNo());

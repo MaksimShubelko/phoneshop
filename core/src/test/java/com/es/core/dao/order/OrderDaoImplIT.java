@@ -24,9 +24,9 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration("/context/applicationContext-core-test.xml")
 public class OrderDaoImplIT {
 
-    private static final String INSERT_ORDER = "INSERT INTO orders (id, serialNo, subtotal, deliveryPrice, " +
+    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, serialNo, subtotal, deliveryPrice, " +
             "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, status) VALUES " +
-            "(:id, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
+            "(:uuid, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
             ":deliveryAddress, :contactPhoneNo, :additionalInf, :status)";
 
     @Resource
@@ -38,11 +38,15 @@ public class OrderDaoImplIT {
     private Order order;
 
     private UUID uuid;
+
+    private Long id;
     @Before
     public void setUp() throws Exception {
         order = new Order();
         uuid = UUID.randomUUID();
-        order.setId(uuid);
+        id = 1L;
+        order.setUuid(uuid);
+        order.setId(1L);
         order.setSubtotal(BigDecimal.ZERO);
         order.setDeliveryPrice(BigDecimal.ZERO);
         order.setTotalPrice(BigDecimal.ZERO);
@@ -60,17 +64,17 @@ public class OrderDaoImplIT {
 
     @Test
     public void getById() {
-        Optional<Order> orderOptional = orderDao.getById(uuid);
+        Optional<Order> orderOptional = orderDao.getById(id);
 
         assertTrue(orderOptional.isPresent());
-        assertEquals(orderOptional.get().getId(), uuid);
+        assertEquals(orderOptional.get().getId(), id);
     }
 
     @Test
     public void save_existing() {
         order.setDeliveryPrice(BigDecimal.TEN);
         orderDao.save(order);
-        Optional<Order> orderOptional = orderDao.getById(uuid);
+        Optional<Order> orderOptional = orderDao.getById(id);
 
         assertTrue(orderOptional.isPresent());
         assertEquals(orderOptional.get().getDeliveryPrice(), BigDecimal.TEN);

@@ -20,7 +20,7 @@ public class OrderOverviewPageController {
 
     @GetMapping("/{uuid}")
     public String getOrder(@PathVariable(name = "uuid") UUID uuid, Model model) {
-        Order order = orderService.get(uuid);
+        Order order = orderService.getByUuid(uuid);
         model.addAttribute("order", order);
 
         return "orderOverview";

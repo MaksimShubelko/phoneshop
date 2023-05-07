@@ -12,7 +12,9 @@ import java.util.UUID;
 @Setter
 public class Order
 {
-    private UUID id;
+    private Long id;
+
+    private UUID uuid;
 
     private Long serialNo;
 
