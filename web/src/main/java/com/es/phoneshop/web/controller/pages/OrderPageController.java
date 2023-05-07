@@ -59,7 +59,7 @@ public class OrderPageController {
         orderPopulator.populate(orderDto, order);
         orderService.placeOrder(order);
 
-        return "redirect:/orderOverview/" + order.getId();
+        return "redirect:/orderOverview/" + order.getUuid();
     }
 
     @ExceptionHandler(OutOfStockException.class)

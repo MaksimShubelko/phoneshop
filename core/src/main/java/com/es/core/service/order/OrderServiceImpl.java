@@ -5,12 +5,12 @@ import com.es.core.dao.stock.StockDao;
 import com.es.core.exception.OutOfStockException;
 import com.es.core.exception.UnknownProductException;
 import com.es.core.model.cart.Cart;
+import com.es.core.model.cart.CartItem;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
+import com.es.core.model.phone.Phone;
 import com.es.core.model.stock.Stock;
 import com.es.core.service.cart.CartService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,15 @@ public class OrderServiceImpl implements OrderService {
     private BigDecimal deliveryPrice;
 
     @Override
-    public Order get(UUID uuid) {
-        return orderDao.getById(uuid).orElseThrow();
+    public Order get(Long id) {
+        return orderDao.getById(id).orElseThrow();
+    }
+
+
+
+    @Override
+    public Order getByUuid(UUID uuid) {
+        return orderDao.getByUuid(uuid).orElseThrow();
     }
 
     @Override
@@ -102,9 +110,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void removeItemsFromCart(List<OrderItem> outOfStock) {
-        outOfStock
-                .forEach(item -> cartService.getCart()
-                        .getItems()
-                        .removeIf(cartItem -> cartItem.getPhone().getId().equals(item.getPhone().getId())));
+        Set<Long> idToRemove = outOfStock.stream()
+                .map(o -> o.getPhone().getId())
+                .collect(Collectors.toSet());
+        List<CartItem> cartItems = cartService.getCart().getItems().stream()
+                .filter(i -> !idToRemove.contains(i.getPhone().getId()))
+                .collect(Collectors.toList());
+        cartService.getCart().setItems(cartItems);
     }
 }

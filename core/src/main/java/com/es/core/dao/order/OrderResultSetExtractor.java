@@ -1,5 +1,6 @@
 package com.es.core.dao.order;
 
+import com.es.core.exception.InvalidStateException;
 import com.es.core.model.order.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -13,8 +14,13 @@ import java.util.UUID;
 public class OrderResultSetExtractor implements ResultSetExtractor<Order> {
     @Override
     public Order extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-        Order order = new Order();
-        if (resultSet.next()) {
+        Order order = null;
+
+        while (resultSet.next()) {
+            if (order != null) {
+                throw new InvalidStateException();
+            }
+            order = new Order();
             initOrderFields(order, resultSet);
         }
 
@@ -22,7 +28,8 @@ public class OrderResultSetExtractor implements ResultSetExtractor<Order> {
     }
 
     private void initOrderFields(Order order, ResultSet resultSet) throws SQLException {
-        order.setId(resultSet.getObject("id", UUID.class));
+        order.setId(resultSet.getLong("id"));
+        order.setUuid(resultSet.getObject("uuid", UUID.class));
         order.setSerialNo(resultSet.getLong("serialNo"));
         order.setSubtotal(resultSet.getBigDecimal("subtotal"));
         order.setDeliveryPrice(resultSet.getBigDecimal("deliveryPrice"));

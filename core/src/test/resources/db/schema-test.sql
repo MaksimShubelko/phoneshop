@@ -62,7 +62,8 @@ create table stocks
 
 create table orders
 (
-    id              UUID        NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    uuid              UUID        NOT NULL,
     serialNo        BIGINT,
     subtotal        DECIMAL     NOT NULL,
     deliveryPrice   DECIMAL     NOT NULL,
@@ -81,7 +82,7 @@ CREATE TABLE orderItems
 (
     id       BIGINT   NOT NULL AUTO_INCREMENT,
     phoneId  BIGINT   NOT NULL,
-    orderId  UUID     NOT NULL,
+    orderId  BIGINT     NOT NULL,
     quantity SMALLINT NOT NULL,
     UNIQUE (id),
     CONSTRAINT FK_orderItems_orderId FOREIGN KEY (orderId) REFERENCES orders (id) ON DELETE CASCADE ON UPDATE CASCADE,
