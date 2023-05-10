@@ -11,10 +11,26 @@
 <title>Order overview</title>
 <div class="container mt-1 my-2">
     <form method="post" id="deleteItem"></form>
+
+    <%--Not authorized--%>
     <form method="get" action="${pageContext.request.contextPath}/productList">
         <input type="submit" class="button button-primary" value="Back to shopping"/>
     </form>
+
+    <%--Role: admin--%>
+    <div class="row">
+        <div class="col-4">
+            <h1>Order number: ${order.serialNo}</h1>
+        </div>
+        <div class="col-3 offset-5">
+            <h1>Status: ${order.status}</h1>
+        </div>
+    </div>
+
+    <%--Not authorized--%>
     <h1>Thank you for your order! Order number: ${order.serialNo}</h1>
+
+    <%--Permit all--%>
     <c:if test="${cartItems.size() != 0}">
         <table class="table table-sm table-hover">
             <div class="row">
@@ -88,21 +104,43 @@
             </tbody>
         </table>
         <div class="row">
-                First name: ${order.firstName}
+            First name: ${order.firstName}
         </div>
         <div class="row">
-              Last name: ${order.lastName}
+            Last name: ${order.lastName}
         </div>
         <div class="row">
-             Delivery address: ${order.deliveryAddress}
+            Delivery address: ${order.deliveryAddress}
         </div>
         <div class="row">
-             Contact phone number: ${order.contactPhoneNo}
+            Contact phone number: ${order.contactPhoneNo}
         </div>
         <div class="row">
-              Additional information: ${order.additionalInf == null ? '-' : order.additionalInf}
+            Additional information: ${order.additionalInf == null ? '-' : order.additionalInf}
         </div>
     </c:if>
+
+    <%--Role: admin--%>
+    <div class="row">
+        <div class="col-2">
+            <a href="${pageContext.request.contextPath}/admin/orders/">
+                <button>Back</button>
+            </a>
+        </div>
+        <form method="post"
+              action="${pageContext.request.contextPath}/admin/orders/${order.serialNo}">
+            <c:if test="${order.status == 'New'}">
+                <div class="row">
+                    <div class="col-2">
+                        <input type="submit" name="status" value="DELIVERED"/>
+                    </div>
+                    <div class="col-2">
+                        <input type="submit" name="status" value="REJECTED"/>
+                    </div>
+                </div>
+            </c:if>
+        </form>
+    </div>
 
 </div>
 </body>

@@ -14,6 +14,12 @@
             <h4>Cart</h4>
         </div>
         </a>
+        <%--Admin--%>
+        <div class="offset-11">
+            <a href="${pageContext.request.contextPath}/admin/orders">
+                <button>Orders management</button>
+            </a>
+        </div>
         <div class="row m-auto pe-auto">
             <h6 class="col-sm-1">Items: </h6>
             <div class="col-sm-1" id="totalQuantity">${cart.totalQuantity} </div>

@@ -13,6 +13,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,9 +28,9 @@ import static org.junit.Assert.assertTrue;
 public class OrderDaoImplIT {
 
     private static final String INSERT_ORDER = "INSERT INTO orders (uuid, serialNo, subtotal, deliveryPrice, " +
-            "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, status) VALUES " +
+            "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, date, status) VALUES " +
             "(:uuid, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
-            ":deliveryAddress, :contactPhoneNo, :additionalInf, :status)";
+            ":deliveryAddress, :contactPhoneNo, :additionalInf, NOW(), :status)";
 
     @Resource
     private OrderDao orderDao;
@@ -55,7 +58,8 @@ public class OrderDaoImplIT {
         order.setDeliveryAddress("address");
         order.setContactPhoneNo("phoneNo");
         order.setStatus(OrderStatus.NEW.getStatus());
-        order.setSerialNo(1L);
+        order.setDate(LocalDateTime.now());
+        order.setSerialNo(2L);
 
         SqlParameterSource namedParamsPhone = new BeanPropertySqlParameterSource(order);
         namedParameterJdbcTemplate.update(INSERT_ORDER, namedParamsPhone);
@@ -89,5 +93,21 @@ public class OrderDaoImplIT {
 
         assertNotNull(orderOptional.get().getId());
         assertEquals(2L, (long) actualSerialNo);
+    }
+
+    @Test
+    public void findAll() {
+        List<Order> orders = orderDao.findAll();
+
+        assertEquals(2, orders.size());
+    }
+
+    @Test
+    public void findBySerialNo() {
+        Optional<Order> orderOptional = orderDao.findBySerialNo(1L);
+
+        assertTrue(orderOptional.isPresent());
+        Long actualSerialNo = orderOptional.get().getSerialNo();
+        assertEquals(1L, (long)actualSerialNo);
     }
 }

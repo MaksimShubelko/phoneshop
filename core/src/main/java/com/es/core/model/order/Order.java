@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,6 +36,8 @@ public class Order
     private String contactPhoneNo;
 
     private String additionalInf;
+
+    private LocalDateTime date = LocalDateTime.now();
 
     private String status;
 

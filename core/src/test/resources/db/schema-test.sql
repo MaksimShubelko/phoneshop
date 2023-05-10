@@ -73,6 +73,7 @@ create table orders
     deliveryAddress VARCHAR(50) NOT NULL,
     contactPhoneNo  VARCHAR(20) NOT NULL,
     additionalInf   VARCHAR(256),
+    date TIMESTAMP NOT NULL,
     status          VARCHAR(10) NOT NULL,
     UNIQUE (id),
     CONSTRAINT CK_serial_number CHECK (serialNo > 0)

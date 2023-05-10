@@ -3,12 +3,13 @@ package com.es.core.service.order;
 import com.es.core.dao.order.OrderDao;
 import com.es.core.dao.stock.StockDao;
 import com.es.core.exception.OutOfStockException;
+import com.es.core.exception.UnknownOrderException;
 import com.es.core.exception.UnknownProductException;
 import com.es.core.model.cart.Cart;
 import com.es.core.model.cart.CartItem;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
-import com.es.core.model.phone.Phone;
+import com.es.core.model.order.OrderStatus;
 import com.es.core.model.stock.Stock;
 import com.es.core.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,11 +45,33 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.getById(id).orElseThrow();
     }
 
-
+    @Override
+    public Order findByUuid(UUID uuid) {
+        return orderDao.findByUuid(uuid).orElseThrow();
+    }
 
     @Override
-    public Order getByUuid(UUID uuid) {
-        return orderDao.getByUuid(uuid).orElseThrow();
+    public List<Order> findAll() {
+        return orderDao.findAll();
+    }
+
+    @Override
+    public Order findBySerialNo(Long serialNo) {
+        Order order = orderDao.findBySerialNo(serialNo).orElseThrow();
+
+        return order;
+    }
+
+    @Transactional
+    @Override
+    public void updateStatus(Order order, OrderStatus status) {
+        if (Objects.isNull(order) || order.getOrderItems().isEmpty()) {
+            throw new UnknownOrderException();
+        }
+
+        order.setStatus(status.getStatus());
+        orderDao.save(order);
+        order.getOrderItems().forEach(item -> updateStockDepOnOrderStatus(item, status));
     }
 
     @Override
@@ -67,6 +91,26 @@ public class OrderServiceImpl implements OrderService {
     public void placeOrder(Order order) throws OutOfStockException {
         checkStockForOrderItems(order);
         orderDao.save(order);
+    }
+
+    private void updateStockDepOnOrderStatus(OrderItem orderItem, OrderStatus status) {
+        Long phoneId;
+        if (Objects.isNull(orderItem) ||
+                Objects.isNull(orderItem.getPhone()) ||
+                Objects.isNull(orderItem.getPhone().getId())) {
+            throw new UnknownProductException();
+        }
+
+        phoneId = orderItem.getPhone().getId();
+        Stock stock = stockDao.getByPhoneId(phoneId).orElseThrow(UnknownProductException::new);
+
+        switch (status) {
+            case DELIVERED:
+                stock.setReserved((int) (stock.getReserved() + orderItem.getQuantity()));
+            case REJECTED:
+                stock.setStock((int) (stock.getStock() + orderItem.getQuantity()));
+        }
+        stockDao.save(stock);
     }
 
     private void checkStockForOrderItems(Order order) {
@@ -104,7 +148,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(UnknownProductException::new);
 
         stock.setStock((int) (stock.getStock() - orderItem.getQuantity()));
-        stock.setReserved((int) (stock.getReserved() + orderItem.getQuantity()));
 
         stockDao.save(stock);
     }

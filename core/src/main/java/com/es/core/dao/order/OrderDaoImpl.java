@@ -1,8 +1,5 @@
 package com.es.core.dao.order;
 
-import com.es.core.dao.phone.PhoneDao;
-import com.es.core.exception.UnknownOrderException;
-import com.es.core.exception.UnknownProductException;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,6 +22,10 @@ public class OrderDaoImpl implements OrderDao {
     private static final String FIND_ORDER_BY_ID = "SELECT * FROM orders WHERE id = ?";
 
     private static final String FIND_ORDER_BY_UUID = "SELECT * FROM orders WHERE uuid = ?";
+
+    private static final String FIND_ORDER_BY_SERIAL_NO = "SELECT * FROM orders WHERE serialNo = ?";
+
+    private static final String FIND_ALL_ORDERS = "SELECT * FROM orders";
 
     private static final String FIND_ITEMS_BY_ORDER_ID = "SELECT o.*, p.id AS phoneId, p.model, p.brand, p.displaySizeInches, p.price, " +
             "colors.id AS colorId, colors.code AS colorCode FROM orderItems o " +
@@ -53,10 +54,10 @@ public class OrderDaoImpl implements OrderDao {
     private NamedParameterJdbcOperations namedParameterJdbcTemplate;
 
     @Resource
-    private PhoneDao phoneDao;
+    private ResultSetExtractor<Order> orderResultSetExtractor;
 
     @Resource
-    private ResultSetExtractor<Order> orderResultSetExtractor;
+    private ResultSetExtractor<List<Order>> orderListResultSetExtractor;
 
     @Resource
     private ResultSetExtractor<List<OrderItem>> orderItemsResultSetExtractor;
@@ -73,8 +74,6 @@ public class OrderDaoImpl implements OrderDao {
         return Optional.of(order);
     }
 
-
-
     @Override
     public void save(Order order) {
         if (Objects.isNull(order.getId())) {
@@ -86,15 +85,32 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public Optional<Order> getByUuid(UUID uuid) {
+    public List<Order> findAll() {
+        return jdbcTemplate.query(FIND_ALL_ORDERS, orderListResultSetExtractor);
+    }
+
+    @Override
+    public Optional<Order> findByUuid(UUID uuid) {
         Order order = jdbcTemplate.query(FIND_ORDER_BY_UUID, orderResultSetExtractor, uuid);
-        if (order != null) {
+        setOrderItemsIntoOrder(order);
+
+        return Optional.ofNullable(order);
+    }
+
+    @Override
+    public Optional<Order> findBySerialNo(Long serialNo) {
+        Order order = jdbcTemplate.query(FIND_ORDER_BY_SERIAL_NO, orderResultSetExtractor, serialNo);
+        setOrderItemsIntoOrder(order);
+
+        return Optional.ofNullable(order);
+    }
+
+    private void setOrderItemsIntoOrder(Order order) {
+        if (order != null && order.getUuid() != null) {
             List<OrderItem> orderItems = jdbcTemplate.query(FIND_ITEMS_BY_ORDER_ID,
                     orderItemsResultSetExtractor, order.getId());
             order.setOrderItems(orderItems);
         }
-
-        return Optional.ofNullable(order);
     }
 
     private void update(Order order) {
