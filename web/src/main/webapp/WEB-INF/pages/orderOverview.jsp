@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
     <tags:templates/>
@@ -12,25 +13,25 @@
 <div class="container mt-1 my-2">
     <form method="post" id="deleteItem"></form>
 
-    <%--Not authorized--%>
     <form method="get" action="${pageContext.request.contextPath}/productList">
         <input type="submit" class="button button-primary" value="Back to shopping"/>
     </form>
 
-    <%--Role: admin--%>
-    <div class="row">
-        <div class="col-4">
-            <h1>Order number: ${order.id}</h1>
+    <sec:authorize access="isAuthenticated() and hasRole('ADMINISTRATOR')">
+        <div class="row">
+            <div class="col-4">
+                <h1>Order number: ${order.id}</h1>
+            </div>
+            <div class="col-3 offset-5">
+                <h1>Status: ${order.status}</h1>
+            </div>
         </div>
-        <div class="col-3 offset-5">
-            <h1>Status: ${order.status}</h1>
-        </div>
-    </div>
+    </sec:authorize>
 
-    <%--Not authorized--%>
-    <h1>Thank you for your order! Order number: ${order.id}</h1>
+    <sec:authorize access="!isAuthenticated()">
+        <h1>Thank you for your order! Order number: ${order.id}</h1>
+    </sec:authorize>
 
-    <%--Permit all--%>
     <c:if test="${cartItems.size() != 0}">
         <table class="table table-sm table-hover">
             <div class="row">
@@ -120,28 +121,28 @@
         </div>
     </c:if>
 
-    <%--Role: admin--%>
-    <div class="row">
-        <div class="col-2">
-            <a href="${pageContext.request.contextPath}/admin/orders/">
-                <button>Back</button>
-            </a>
+    <sec:authorize access="isAuthenticated() and hasRole('ADMINISTRATOR')">
+        <div class="row">
+            <div class="col-2">
+                <a href="${pageContext.request.contextPath}/admin/orders/">
+                    <button>Back</button>
+                </a>
+            </div>
+            <form method="post"
+                  action="${pageContext.request.contextPath}/admin/orders/${order.id}">
+                <c:if test="${order.status == 'New'}">
+                    <div class="row">
+                        <div class="col-2">
+                            <input type="submit" name="status" value="DELIVERED"/>
+                        </div>
+                        <div class="col-2">
+                            <input type="submit" name="status" value="REJECTED"/>
+                        </div>
+                    </div>
+                </c:if>
+            </form>
         </div>
-        <form method="post"
-              action="${pageContext.request.contextPath}/admin/orders/${order.id}">
-            <c:if test="${order.status == 'New'}">
-                <div class="row">
-                    <div class="col-2">
-                        <input type="submit" name="status" value="DELIVERED"/>
-                    </div>
-                    <div class="col-2">
-                        <input type="submit" name="status" value="REJECTED"/>
-                    </div>
-                </div>
-            </c:if>
-        </form>
-    </div>
-
+    </sec:authorize>
 </div>
 </body>
 </head>
