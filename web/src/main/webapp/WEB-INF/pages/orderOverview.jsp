@@ -20,7 +20,7 @@
     <%--Role: admin--%>
     <div class="row">
         <div class="col-4">
-            <h1>Order number: ${order.serialNo}</h1>
+            <h1>Order number: ${order.id}</h1>
         </div>
         <div class="col-3 offset-5">
             <h1>Status: ${order.status}</h1>
@@ -28,7 +28,7 @@
     </div>
 
     <%--Not authorized--%>
-    <h1>Thank you for your order! Order number: ${order.serialNo}</h1>
+    <h1>Thank you for your order! Order number: ${order.id}</h1>
 
     <%--Permit all--%>
     <c:if test="${cartItems.size() != 0}">
@@ -128,7 +128,7 @@
             </a>
         </div>
         <form method="post"
-              action="${pageContext.request.contextPath}/admin/orders/${order.serialNo}">
+              action="${pageContext.request.contextPath}/admin/orders/${order.id}">
             <c:if test="${order.status == 'New'}">
                 <div class="row">
                     <div class="col-2">

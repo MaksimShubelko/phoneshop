@@ -23,8 +23,6 @@ public class OrderDaoImpl implements OrderDao {
 
     private static final String FIND_ORDER_BY_UUID = "SELECT * FROM orders WHERE uuid = ?";
 
-    private static final String FIND_ORDER_BY_SERIAL_NO = "SELECT * FROM orders WHERE serialNo = ?";
-
     private static final String FIND_ALL_ORDERS = "SELECT * FROM orders";
 
     private static final String FIND_ITEMS_BY_ORDER_ID = "SELECT o.*, p.id AS phoneId, p.model, p.brand, p.displaySizeInches, p.price, " +
@@ -37,13 +35,10 @@ public class OrderDaoImpl implements OrderDao {
             "orders.totalPrice = :totalPrice, orders.firstName = :firstName, orders.lastName = :lastName, orders.contactPhoneNo = :contactPhoneNo, " +
             "additionalInf = :additionalInf, orders.status = :status WHERE orders.id = :id";
 
-    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, serialNo, subtotal, deliveryPrice, " +
+    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, subtotal, deliveryPrice, " +
             "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, status) VALUES " +
-            "(:uuid, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
+            "(:uuid, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
             ":deliveryAddress, :contactPhoneNo, :additionalInf, :status)";
-
-    private static final String SELECT_MAX_SERIAL_NO = "SELECT MAX(serialNo) FROM orders";
-
     private static final String INSERT_ORDER_ITEM = "INSERT INTO orderItems (phoneId, orderId, quantity) " +
             "VALUES (?, ?, ?)";
 
@@ -61,18 +56,6 @@ public class OrderDaoImpl implements OrderDao {
 
     @Resource
     private ResultSetExtractor<List<OrderItem>> orderItemsResultSetExtractor;
-
-
-    @Override
-    public Optional<Order> getById(Long id) {
-        Order order = jdbcTemplate.query(FIND_ORDER_BY_ID, orderResultSetExtractor, id);
-        List<OrderItem> orderItems = jdbcTemplate.query(FIND_ITEMS_BY_ORDER_ID,
-                orderItemsResultSetExtractor, id);
-
-        order.setOrderItems(orderItems);
-
-        return Optional.of(order);
-    }
 
     @Override
     public void save(Order order) {
@@ -98,8 +81,8 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public Optional<Order> findBySerialNo(Long serialNo) {
-        Order order = jdbcTemplate.query(FIND_ORDER_BY_SERIAL_NO, orderResultSetExtractor, serialNo);
+    public Optional<Order> findById(Long id) {
+        Order order = jdbcTemplate.query(FIND_ORDER_BY_ID, orderResultSetExtractor, id);
         setOrderItemsIntoOrder(order);
 
         return Optional.ofNullable(order);
@@ -119,12 +102,7 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     private void insert(Order order) {
-        Long maxSerialNo = jdbcTemplate.queryForObject(SELECT_MAX_SERIAL_NO, Long.class);
-        if (Objects.isNull(maxSerialNo)) {
-            maxSerialNo = 0L;
-        }
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        order.setSerialNo(++maxSerialNo);
         order.setUuid(UUID.randomUUID());
         SqlParameterSource namedParamsOrder = new BeanPropertySqlParameterSource(order);
         namedParameterJdbcTemplate.update(INSERT_ORDER, namedParamsOrder, keyHolder);

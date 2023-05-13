@@ -20,11 +20,11 @@ import java.util.Optional;
 @Service
 public class HttpSessionCartService implements CartService {
 
-    private Cart cart;
+    private final Cart cart;
 
-    private PhoneDao phoneDao;
+    private final PhoneDao phoneDao;
 
-    private StockDao stockDao;
+    private final StockDao stockDao;
 
     public HttpSessionCartService(Cart cart, PhoneDao phoneDao, StockDao stockDao) {
         this.cart = cart;

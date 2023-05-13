@@ -25,18 +25,18 @@ public class OrdersPageController {
         return "admin";
     }
 
-    @GetMapping("/{serialNo}")
-    public String getOrders(@PathVariable(name = "serialNo") Long serialNo, Model model) {
-        Order order = orderService.findBySerialNo(serialNo);
+    @GetMapping("/{id}")
+    public String getOrders(@PathVariable(name = "id") Long id, Model model) {
+        Order order = orderService.findById(id);
         model.addAttribute("order", order);
 
         return "orderOverview";
     }
 
-    @PostMapping("/{serialNo}")
-    public String changeStatus(@PathVariable(name = "serialNo") Long serialNo,
+    @PostMapping("/{id}")
+    public String changeStatus(@PathVariable(name = "id") Long id,
                                @RequestParam("status") OrderStatus status) {
-        Order order = orderService.findBySerialNo(serialNo);
+        Order order = orderService.findById(id);
         orderService.updateStatus(order, status);
 
         return "redirect:/admin/orders";

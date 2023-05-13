@@ -10,6 +10,7 @@ import com.es.core.model.cart.CartItem;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
 import com.es.core.model.order.OrderStatus;
+import com.es.core.model.phone.Phone;
 import com.es.core.model.stock.Stock;
 import com.es.core.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order get(Long id) {
-        return orderDao.getById(id).orElseThrow();
+        return orderDao.findById(id).orElseThrow();
     }
 
     @Override
@@ -56,10 +58,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order findBySerialNo(Long serialNo) {
-        Order order = orderDao.findBySerialNo(serialNo).orElseThrow();
-
-        return order;
+    public Order findById(Long id) {
+        return orderDao.findById(id).orElseThrow();
     }
 
     @Transactional
@@ -95,21 +95,23 @@ public class OrderServiceImpl implements OrderService {
 
     private void updateStockDepOnOrderStatus(OrderItem orderItem, OrderStatus status) {
         Long phoneId;
-        if (Objects.isNull(orderItem) ||
-                Objects.isNull(orderItem.getPhone()) ||
-                Objects.isNull(orderItem.getPhone().getId())) {
-            throw new UnknownProductException();
-        }
+        Optional.of(orderItem)
+                .map(OrderItem::getPhone)
+                .map(Phone::getId)
+                .orElseThrow(UnknownProductException::new);
 
         phoneId = orderItem.getPhone().getId();
         Stock stock = stockDao.getByPhoneId(phoneId).orElseThrow(UnknownProductException::new);
 
-        switch (status) {
-            case DELIVERED:
-                stock.setReserved((int) (stock.getReserved() + orderItem.getQuantity()));
-            case REJECTED:
-                stock.setStock((int) (stock.getStock() + orderItem.getQuantity()));
+        if (status == OrderStatus.DELIVERED) {
+            stock.setReserved((int) (stock.getReserved() - orderItem.getQuantity()));
+            stock.setReserved((int) (stock.getStock() - orderItem.getQuantity()));
+        } else {
+            if (status == OrderStatus.REJECTED) {
+                stock.setReserved((int) (stock.getReserved() - orderItem.getQuantity()));
+            }
         }
+
         stockDao.save(stock);
     }
 
@@ -147,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
         Stock stock = stockDao.getByPhoneId(orderItem.getPhone().getId())
                 .orElseThrow(UnknownProductException::new);
 
-        stock.setStock((int) (stock.getStock() - orderItem.getQuantity()));
+        stock.setStock((int) (stock.getReserved() + orderItem.getQuantity()));
 
         stockDao.save(stock);
     }

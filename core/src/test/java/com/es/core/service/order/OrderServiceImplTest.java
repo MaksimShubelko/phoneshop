@@ -3,7 +3,6 @@ package com.es.core.service.order;
 import com.es.core.dao.order.OrderDao;
 import com.es.core.dao.stock.StockDao;
 import com.es.core.exception.UnknownOrderException;
-import com.es.core.exception.UnknownProductException;
 import com.es.core.model.cart.Cart;
 import com.es.core.model.cart.CartItem;
 import com.es.core.model.order.Order;
@@ -36,21 +35,21 @@ public class OrderServiceImplTest {
     private StockDao stockDao;
 
     @Mock
+    private CartService cartService;
+    @Mock
     private OrderDao orderDao;
 
-    @Mock
-    private CartService cartService;
     @InjectMocks
     private OrderServiceImpl orderService;
 
     @Test
     public void get() {
         Order order = mock(Order.class);
-        when(orderDao.getById(any())).thenReturn(Optional.of(order));
+        when(orderDao.findById(any())).thenReturn(Optional.of(order));
 
         orderService.get(any());
 
-        verify(orderDao, times(1)).getById(any());
+        verify(orderDao, times(1)).findById(any());
     }
 
     @Test
@@ -97,14 +96,14 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    public void findBySerialNo() {
-        Long serialNo = 1L;
+    public void findById() {
+        Long id = 1L;
         Order order = mock(Order.class);
-        when(orderDao.findBySerialNo(serialNo)).thenReturn(Optional.of(order));
+        when(orderDao.findById(id)).thenReturn(Optional.of(order));
 
-        orderService.findBySerialNo(serialNo);
+        orderService.findById(id);
 
-        verify(orderDao, times(1)).findBySerialNo(serialNo);
+        verify(orderDao, times(1)).findById(id);
     }
 
     @Test(expected = UnknownOrderException.class)
@@ -115,8 +114,15 @@ public class OrderServiceImplTest {
     @Test
     public void updateStatus_success() {
         Order order = mock(Order.class);
-        List<OrderItem> orderItems = new ArrayList<>(List.of(new OrderItem()));
+        OrderItem orderItem = mock(OrderItem.class);
+        Phone phone = mock(Phone.class);
+        Stock stock = mock(Stock.class);
+        List<OrderItem> orderItems = new ArrayList<>(List.of(orderItem));
         when(order.getOrderItems()).thenReturn(orderItems);
+        when(order.getId()).thenReturn(1L);
+        when(orderItem.getPhone()).thenReturn(phone);
+        when(phone.getId()).thenReturn(1L);
+        when(stockDao.getByPhoneId(1L)).thenReturn(Optional.of(stock));
 
         orderService.updateStatus(order, OrderStatus.NEW);
     }

@@ -30,7 +30,6 @@ public class OrderResultSetExtractor implements ResultSetExtractor<Order> {
     private void initOrderFields(Order order, ResultSet resultSet) throws SQLException {
         order.setId(resultSet.getLong("id"));
         order.setUuid(resultSet.getObject("uuid", UUID.class));
-        order.setSerialNo(resultSet.getLong("serialNo"));
         order.setSubtotal(resultSet.getBigDecimal("subtotal"));
         order.setDeliveryPrice(resultSet.getBigDecimal("deliveryPrice"));
         order.setTotalPrice(resultSet.getBigDecimal("totalPrice"));

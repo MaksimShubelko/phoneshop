@@ -33,16 +33,15 @@ public class OrderListResultSetExtractorIT {
 
         assertFalse(orderList.isEmpty());
 
-        for (Order order : orderList) {
+        orderList.forEach(order -> {
             assertNotNull(order.getId());
-            assertNotNull(order.getSerialNo());
             assertNotNull(order.getFirstName());
             assertNotNull(order.getLastName());
             assertNotNull(order.getContactPhoneNo());
             assertNotNull(order.getDeliveryAddress());
             assertNotNull(order.getTotalPrice());
             assertNotNull(order.getStatus());
-            assertNotNull(order.getDate());
-        }
+            assertNotNull(order.getCreationDate());
+        });
     }
 }

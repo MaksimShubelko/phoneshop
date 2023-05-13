@@ -8,12 +8,10 @@ import java.util.UUID;
 
 public interface OrderDao {
 
-    Optional<Order> getById(Long id);
-
     void save(Order order);
 
     List<Order> findAll();
     Optional<Order> findByUuid(UUID uuid);
 
-    Optional<Order> findBySerialNo(Long serialNo);
+    Optional<Order> findById(Long serialNo);
 }

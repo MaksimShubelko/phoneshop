@@ -47,12 +47,12 @@
         <c:forEach var="order" items="${orders}">
             <tr class="col-offset">
                 <td>
-                    <a href="${pageContext.request.contextPath}/admin/orders/${order.serialNo}">${order.serialNo}</a>
+                    <a href="${pageContext.request.contextPath}/admin/orders/${order.id}">${order.id}</a>
                 </td>
                 <td>${order.firstName} ${order.lastName}</td>
                 <td>${order.contactPhoneNo}</td>
                 <td>${order.deliveryAddress}</td>
-                <td><tags:dateTimeFormat localeDateTime="${order.date}"/></td>
+                <td><tags:dateTimeFormat localeDateTime="${order.creationDate}"/></td>
                 <td>${order.totalPrice}$</td>
                 <td>${order.status}</td>
             </tr>

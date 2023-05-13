@@ -3,7 +3,6 @@ package com.es.phoneshop.web.controller.pages.admin;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderStatus;
 import com.es.core.service.order.OrderService;
-import com.es.phoneshop.web.controller.validator.CartItemDaoValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,9 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,18 +44,18 @@ public class OrdersPageControllerTest {
                 .setViewResolvers(new InternalResourceViewResolver("/WEB-INF/pages/", ".jsp"))
                 .build();
         Order order = mock(Order.class);
-        when(orderService.findBySerialNo(1L)).thenReturn(order);
+        when(orderService.findById(1L)).thenReturn(order);
     }
 
     @Test
     public void getOrders() throws Exception {
         mvc.perform(get("/admin/orders"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("orderOverview"));
+                .andExpect(view().name("admin"));
     }
 
     @Test
-    public void testGetOrders() throws Exception {
+    public void getOrder() throws Exception {
         mvc.perform(get("/admin/orders/1"))
                 .andExpect(status().isOk());
     }

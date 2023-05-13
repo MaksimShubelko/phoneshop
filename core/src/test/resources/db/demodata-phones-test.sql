@@ -31,8 +31,8 @@ insert into stocks (phoneId, stock, reserved) values (1008, 18, 7);
 insert into stocks (phoneId, stock, reserved) values (1009, 19, 8);
 insert into stocks (phoneId, stock, reserved) values (1010, 20, 9);
 
-insert into orders (uuid, serialNo, subtotal, deliveryPrice, totalPrice, firstname, lastname, deliveryAddress, contactPhoneNo, date, Status) VALUES
-    ('e58ed763-928c-4155-bee9-fdbaaadc15f3', 1, 10.0, 5.0, 15.0, 'name', 'lastname', 'address', '+375292150297', NOW(), 'Status')
+insert into orders (uuid, subtotal, deliveryPrice, totalPrice, firstname, lastname, deliveryAddress, contactPhoneNo, creationDate, Status) VALUES
+    ('e58ed763-928c-4155-bee9-fdbaaadc15f3', 10.0, 5.0, 15.0, 'name', 'lastname', 'address', '+375292150297', NOW(), 'Status')
 
 
 

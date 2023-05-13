@@ -17,7 +17,7 @@ public interface OrderService {
 
     List<Order> findAll();
 
-    Order findBySerialNo(Long serialNo);
+    Order findById(Long serialNo);
 
     void updateStatus(Order order, OrderStatus status);
 }

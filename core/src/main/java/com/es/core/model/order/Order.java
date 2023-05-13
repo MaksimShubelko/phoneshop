@@ -17,8 +17,6 @@ public class Order
 
     private UUID uuid;
 
-    private Long serialNo;
-
     private List<OrderItem> orderItems = new ArrayList<>();
 
     private BigDecimal subtotal;
@@ -37,7 +35,7 @@ public class Order
 
     private String additionalInf;
 
-    private LocalDateTime date = LocalDateTime.now();
+    private LocalDateTime creationDate = LocalDateTime.now();
 
     private String status;
 

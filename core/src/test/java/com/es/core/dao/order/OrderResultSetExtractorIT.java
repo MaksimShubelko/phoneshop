@@ -27,9 +27,9 @@ public class OrderResultSetExtractorIT {
 
     private static final String FIND_ORDER_BY_ID = "SELECT * FROM orders WHERE id = ?";
 
-    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, serialNo, subtotal, deliveryPrice, " +
+    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, subtotal, deliveryPrice, " +
             "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, status) VALUES " +
-            "(:uuid, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
+            "(:uuid, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
             ":deliveryAddress, :contactPhoneNo, :additionalInf, :status)";
 
     @Resource
@@ -62,7 +62,6 @@ public class OrderResultSetExtractorIT {
         order.setContactPhoneNo("phoneNo");
         order.setStatus(OrderStatus.NEW.getStatus());
         order.setAdditionalInf("additionalInf");
-        order.setSerialNo(1L);
 
         SqlParameterSource namedParamsOrder = new BeanPropertySqlParameterSource(order);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
@@ -76,7 +75,6 @@ public class OrderResultSetExtractorIT {
         Order order = jdbcTemplate.query(FIND_ORDER_BY_ID, orderResultSetExtractor, id);
 
         assertNotNull(order.getId());
-        assertNotNull(order.getSerialNo());
         assertNotNull(order.getSubtotal());
         assertNotNull(order.getDeliveryPrice());
         assertNotNull(order.getTotalPrice());

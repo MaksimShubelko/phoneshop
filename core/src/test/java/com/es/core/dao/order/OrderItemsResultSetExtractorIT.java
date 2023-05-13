@@ -26,9 +26,9 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration("/context/applicationContext-core-test.xml")
 public class OrderItemsResultSetExtractorIT {
 
-    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, serialNo, subtotal, deliveryPrice, " +
+    private static final String INSERT_ORDER = "INSERT INTO orders (uuid, subtotal, deliveryPrice, " +
             "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, status) VALUES " +
-            "(:uuid, :serialNo, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
+            "(:uuid, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
             ":deliveryAddress, :contactPhoneNo, :additionalInf, :status)";
 
     private static final String INSERT_ORDER_ITEM = "INSERT INTO orderItems (phoneId, orderId, quantity) " +
@@ -70,7 +70,6 @@ public class OrderItemsResultSetExtractorIT {
         order.setContactPhoneNo("phoneNo");
         order.setStatus(OrderStatus.NEW.getStatus());
         order.setAdditionalInf("additionalInf");
-        order.setSerialNo(1L);
 
         SqlParameterSource namedParamsPhone = new BeanPropertySqlParameterSource(order);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();

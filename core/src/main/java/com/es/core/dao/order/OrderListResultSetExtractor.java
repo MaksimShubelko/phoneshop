@@ -28,13 +28,12 @@ public class OrderListResultSetExtractor implements ResultSetExtractor<List<Orde
 
     private void initOrderFields(Order order, ResultSet resultSet) throws SQLException {
         order.setId(resultSet.getLong("id"));
-        order.setSerialNo(resultSet.getLong("serialNo"));
         order.setFirstName(resultSet.getString("firstname"));
         order.setLastName(resultSet.getString("lastname"));
         order.setContactPhoneNo(resultSet.getString("contactPhoneNo"));
         order.setDeliveryAddress(resultSet.getString("deliveryAddress"));
         order.setTotalPrice(resultSet.getBigDecimal("totalPrice"));
         order.setStatus(resultSet.getString("status"));
-        order.setDate(resultSet.getTimestamp("date").toLocalDateTime());
+        order.setCreationDate(resultSet.getTimestamp("creationDate").toLocalDateTime());
     }
 }

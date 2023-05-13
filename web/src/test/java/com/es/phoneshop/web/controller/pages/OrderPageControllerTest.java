@@ -53,7 +53,6 @@ public class OrderPageControllerTest {
         mvc = MockMvcBuilders.standaloneSetup(orderPageController)
                 .setViewResolvers(new InternalResourceViewResolver("/WEB-INF/pages/", ".jsp"))
                 .build();
-
     }
 
     @Test
