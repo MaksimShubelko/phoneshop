@@ -29,7 +29,7 @@ public class OrderDaoImplIT {
     private static final String INSERT_ORDER = "INSERT INTO orders (uuid, subtotal, deliveryPrice, " +
             "totalPrice, firstName, lastName, deliveryAddress, contactPhoneNo, additionalInf, creationDate, status) VALUES " +
             "(:uuid, :subtotal, :deliveryPrice, :totalPrice, :firstName, :lastName, " +
-            ":deliveryAddress, :contactPhoneNo, :additionalInf, NOW(), :status)";
+            ":deliveryAddress, :contactPhoneNo, :additionalInf, :creationDate, :status)";
 
     @Resource
     private OrderDao orderDao;

@@ -105,11 +105,11 @@ public class OrderServiceImpl implements OrderService {
 
         if (status == OrderStatus.DELIVERED) {
             stock.setReserved((int) (stock.getReserved() - orderItem.getQuantity()));
-            stock.setReserved((int) (stock.getStock() - orderItem.getQuantity()));
-        } else {
-            if (status == OrderStatus.REJECTED) {
-                stock.setReserved((int) (stock.getReserved() - orderItem.getQuantity()));
-            }
+            stock.setStock((int) (stock.getStock() - orderItem.getQuantity()));
+        }
+
+        if (status == OrderStatus.REJECTED) {
+            stock.setReserved((int) (stock.getReserved() - orderItem.getQuantity()));
         }
 
         stockDao.save(stock);
@@ -149,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
         Stock stock = stockDao.getByPhoneId(orderItem.getPhone().getId())
                 .orElseThrow(UnknownProductException::new);
 
-        stock.setStock((int) (stock.getReserved() + orderItem.getQuantity()));
+        stock.setReserved((int) (stock.getReserved() + orderItem.getQuantity()));
 
         stockDao.save(stock);
     }
