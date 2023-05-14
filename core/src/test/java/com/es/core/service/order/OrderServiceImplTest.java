@@ -2,10 +2,12 @@ package com.es.core.service.order;
 
 import com.es.core.dao.order.OrderDao;
 import com.es.core.dao.stock.StockDao;
+import com.es.core.exception.UnknownOrderException;
 import com.es.core.model.cart.Cart;
 import com.es.core.model.cart.CartItem;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
+import com.es.core.model.order.OrderStatus;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.stock.Stock;
 import com.es.core.service.cart.CartService;
@@ -16,8 +18,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -31,21 +35,21 @@ public class OrderServiceImplTest {
     private StockDao stockDao;
 
     @Mock
+    private CartService cartService;
+    @Mock
     private OrderDao orderDao;
 
-    @Mock
-    private CartService cartService;
     @InjectMocks
     private OrderServiceImpl orderService;
 
     @Test
     public void get() {
         Order order = mock(Order.class);
-        when(orderDao.getById(any())).thenReturn(Optional.of(order));
+        when(orderDao.findById(any())).thenReturn(Optional.of(order));
 
         orderService.get(any());
 
-        verify(orderDao, times(1)).getById(any());
+        verify(orderDao, times(1)).findById(any());
     }
 
     @Test
@@ -71,5 +75,55 @@ public class OrderServiceImplTest {
         orderService.placeOrder(order);
 
         verify(orderDao, times(1)).save(order);
+    }
+
+    @Test
+    public void findByUuid() {
+        UUID uuid = UUID.randomUUID();
+        Order order = mock(Order.class);
+        when(orderDao.findByUuid(uuid)).thenReturn(Optional.of(order));
+
+        orderService.findByUuid(uuid);
+
+        verify(orderDao, times(1)).findByUuid(uuid);
+    }
+
+    @Test
+    public void findAll() {
+        orderService.findAll();
+
+        verify(orderDao, times(1)).findAll();
+    }
+
+    @Test
+    public void findById() {
+        Long id = 1L;
+        Order order = mock(Order.class);
+        when(orderDao.findById(id)).thenReturn(Optional.of(order));
+
+        orderService.findById(id);
+
+        verify(orderDao, times(1)).findById(id);
+    }
+
+    @Test(expected = UnknownOrderException.class)
+    public void updateStatus_exception() {
+        orderService.updateStatus(null, OrderStatus.NEW);
+    }
+
+    @Test
+    public void updateStatus_success() {
+        Order order = mock(Order.class);
+        OrderItem orderItem = mock(OrderItem.class);
+        Phone phone = mock(Phone.class);
+        Stock stock = mock(Stock.class);
+        List<OrderItem> orderItems = new ArrayList<>(List.of(orderItem));
+        when(order.getOrderItems()).thenReturn(orderItems);
+        when(order.getId()).thenReturn(1L);
+        when(orderItem.getPhone()).thenReturn(phone);
+        when(phone.getId()).thenReturn(1L);
+        when(stockDao.getByPhoneId(1L)).thenReturn(Optional.of(stock));
+
+        orderService.updateStatus(order, OrderStatus.NEW);
     }
 }

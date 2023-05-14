@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -15,8 +16,6 @@ public class Order
     private Long id;
 
     private UUID uuid;
-
-    private Long serialNo;
 
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -35,6 +34,8 @@ public class Order
     private String contactPhoneNo;
 
     private String additionalInf;
+
+    private LocalDateTime creationDate = LocalDateTime.now();
 
     private String status;
 
