@@ -1,4 +1,4 @@
-package com.es.phoneshop.web.controller;
+package com.es.phoneshop.web.controller.pages;
 
 import com.es.phoneshop.web.controller.pages.LoginPageController;
 import org.junit.Before;
