@@ -12,11 +12,7 @@ public class CartItemDaoValidator implements Validator {
 
     private static final String NEGATIVE_QUANTITY_MESSAGE = "Quantity should be positive";
 
-    private static final String INCORRECT_INPUT_FORMAT_MESSAGE = "Incorrect input format";
-
     private static final String NEGATIVE_QUANTITY_ERR_CODE = "quantity.negative";
-
-    private static final String INCORRECT_INPUT_ERR_CODE = "incorrect.input";
 
 
     @Override

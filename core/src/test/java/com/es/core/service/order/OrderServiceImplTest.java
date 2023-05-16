@@ -10,7 +10,6 @@ import com.es.core.model.order.OrderItem;
 import com.es.core.model.order.OrderStatus;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.stock.Stock;
-import com.es.core.service.cart.CartService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,18 +23,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OrderServiceImplTest {
     @Mock
     private StockDao stockDao;
 
-    @Mock
-    private CartService cartService;
     @Mock
     private OrderDao orderDao;
 
@@ -70,7 +64,6 @@ public class OrderServiceImplTest {
         OrderItem orderItem = new OrderItem();
         orderItem.setOrder(order);
         orderItem.setQuantity(0L);
-        Stock stock = mock(Stock.class);
 
         orderService.placeOrder(order);
 

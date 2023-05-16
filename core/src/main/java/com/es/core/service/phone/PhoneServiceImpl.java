@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -41,16 +39,6 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     public Phone getById(Long phoneId) {
-        Optional<Phone> phoneOptional = Optional.empty();
-        if (Objects.nonNull(phoneId)) {
-            phoneOptional = phoneDao.get(phoneId);
-        }
-
-        if (Objects.isNull(phoneId) || phoneOptional.isEmpty()) {
-            throw new UnknownProductException();
-        }
-
-        return phoneOptional.get();
+        return phoneDao.get(phoneId).orElseThrow(UnknownProductException::new);
     }
-
 }

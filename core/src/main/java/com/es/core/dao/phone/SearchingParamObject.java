@@ -60,10 +60,6 @@ public class SearchingParamObject {
         this.sortBy = sortBy;
     }
 
-    public void setSortOrder(String sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
     public void setPhonesPerPage(int phonesPerPage) {
         this.phonesPerPage = phonesPerPage;
     }

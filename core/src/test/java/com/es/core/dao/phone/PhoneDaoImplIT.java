@@ -167,12 +167,12 @@ public class PhoneDaoImplIT {
                         || ph.getBrand().contains(searchingCriteriaUpper))
                 .collect(Collectors.toList());
 
-        for (Phone phone : searchedPhonesExpected) {
+        searchedPhonesExpected.forEach(phone -> {
             assertTrue(phone.getModel().contains(searchingCriteriaLower)
                     || phone.getBrand().contains(searchingCriteriaLower)
                     || phone.getModel().contains(searchingCriteriaUpper)
                     || phone.getBrand().contains(searchingCriteriaUpper));
-        }
+        });
 
         assertEquals(searchedPhonesExpected.size(), searchedPhonesActual.size());
         assertNotEquals(searchedPhonesExpected.size(), phones.size());

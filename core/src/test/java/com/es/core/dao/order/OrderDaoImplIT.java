@@ -39,13 +39,11 @@ public class OrderDaoImplIT {
 
     private Order order;
 
-    private UUID uuid;
-
     private Long id;
     @Before
     public void setUp() throws Exception {
         order = new Order();
-        uuid = UUID.randomUUID();
+        UUID uuid = UUID.randomUUID();
         id = 1L;
         order.setUuid(uuid);
         order.setId(1L);

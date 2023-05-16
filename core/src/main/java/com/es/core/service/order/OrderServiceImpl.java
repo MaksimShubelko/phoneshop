@@ -94,13 +94,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void updateStockDepOnOrderStatus(OrderItem orderItem, OrderStatus status) {
-        Long phoneId;
-        Optional.of(orderItem)
+        Long phoneId = Optional.of(orderItem)
                 .map(OrderItem::getPhone)
                 .map(Phone::getId)
                 .orElseThrow(UnknownProductException::new);
 
-        phoneId = orderItem.getPhone().getId();
         Stock stock = stockDao.getByPhoneId(phoneId).orElseThrow(UnknownProductException::new);
 
         if (status == OrderStatus.DELIVERED) {

@@ -9,7 +9,6 @@ public interface PhoneService {
 
     List<Phone> findAll(SearchingParamObject paramObject);
 
-
     int getCountPages(String term);
 
     Phone getById(Long phoneId);

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -43,8 +42,7 @@ public class HttpSessionCartService implements CartService {
             throw new InvalidQuantityException();
         }
 
-        Optional<Phone> phoneOptional = phoneDao.get(phoneId);
-        Phone phone = phoneOptional.orElseThrow(UnknownProductException::new);
+        Phone phone = phoneDao.get(phoneId).orElseThrow(UnknownProductException::new);
 
         Optional<CartItem> cartItem = getItemFromCart(phone);
         if (cartItem.isPresent()) {
@@ -55,11 +53,10 @@ public class HttpSessionCartService implements CartService {
     }
 
     private void addItemToCart(CartItem cartItem, Long quantity) {
-        Optional<Stock> stockOptional = stockDao.getByPhoneId(cartItem.getPhone().getId());
         long totalQuantity = cartItem.getQuantity() + quantity;
-        long availableQuantity;
-
-        availableQuantity = stockOptional.map(Stock::getStock).orElse(0);
+        long availableQuantity = stockDao.getByPhoneId(cartItem.getPhone().getId())
+                .map(Stock::getStock)
+                .orElse(0);
 
         if (availableQuantity < totalQuantity) {
             throw new OutOfStockException();
@@ -78,17 +75,15 @@ public class HttpSessionCartService implements CartService {
     }
 
     private void updateItem(Long phoneId, Long quantity) {
-        Optional<Stock> stockOptional = stockDao.getByPhoneId(phoneId);
-        Stock stock = stockOptional.orElseThrow(OutOfStockException::new);
-
-        Integer availableQuantity = stock.getStock();
-
-        if (Objects.isNull(availableQuantity)) {
-            availableQuantity = 0;
-        }
+        Integer availableQuantity = stockDao.getByPhoneId(phoneId)
+                .map(Stock::getStock)
+                .orElse(0);
 
         if (availableQuantity > quantity) {
-            Optional<CartItem> cartItem = cart.getItems().stream().filter(i -> i.getPhone().getId().equals(phoneId)).findFirst();
+            Optional<CartItem> cartItem = cart.getItems().stream()
+                    .filter(i -> i.getPhone().getId().equals(phoneId))
+                    .findFirst();
+
             cartItem.ifPresent(item -> item.setQuantity(quantity));
         }
         updateCartInformation();
@@ -96,12 +91,11 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void remove(Long phoneId) {
-        Optional<CartItem> item = cart.getItems()
+        CartItem cartItem = cart.getItems()
                 .stream()
                 .filter(it -> it.getPhone().getId().equals(phoneId))
-                .findFirst();
-
-        CartItem cartItem = item.orElseThrow(UnknownProductException::new);
+                .findFirst()
+                .orElseThrow(UnknownProductException::new);
 
         cart.getItems().remove(cartItem);
         updateCartInformation();
@@ -115,10 +109,9 @@ public class HttpSessionCartService implements CartService {
     }
 
     private Optional<CartItem> getItemFromCart(Phone phone) {
-        Long phoneId = phone.getId();
         return cart.getItems()
                 .stream()
-                .filter(item -> item.getPhone().getId().equals(phoneId))
+                .filter(item -> item.getPhone().getId().equals(phone.getId()))
                 .findFirst();
     }
 
