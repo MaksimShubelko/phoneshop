@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <head>
     <tags:templates/>
 </head>
@@ -8,18 +9,19 @@
 <title>Product list</title>
 <div class="container mt-3">
     <hr class="my-2">
-    <div class="container-fluid">
-        <a href="${pageContext.request.contextPath}/cart">
-        <div class="offset-1">
-            <h4>Cart</h4>
-        </div>
-        </a>
-        <%--Admin--%>
-        <div class="offset-11">
+    <sec:authorize access="isAuthenticated() and hasRole('ADMINISTRATOR')">
+        <div class="offset-10">
             <a href="${pageContext.request.contextPath}/admin/orders">
-                <button>Orders management</button>
+                <button class="text-nowrap">Orders management</button>
             </a>
         </div>
+    </sec:authorize>
+    <div class="container-fluid">
+        <a href="${pageContext.request.contextPath}/cart">
+            <div class="offset-1">
+                <h4>Cart</h4>
+            </div>
+        </a>
         <div class="row m-auto pe-auto">
             <h6 class="col-sm-1">Items: </h6>
             <div class="col-sm-1" id="totalQuantity">${cart.totalQuantity} </div>
