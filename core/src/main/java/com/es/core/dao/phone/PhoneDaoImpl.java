@@ -69,13 +69,8 @@ public class PhoneDaoImpl implements PhoneDao {
 
     @Override
     public Optional<Phone> get(Long key) {
-        List<Phone> phones = jdbcTemplate.query(FIND_PHONE_BY_ID, phoneResultSetExtractor, key);
-
-        if (phones.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(phones.get(0));
+        return jdbcTemplate.query(FIND_PHONE_BY_ID, phoneResultSetExtractor, key)
+                .stream().findFirst();
     }
 
     @Override
