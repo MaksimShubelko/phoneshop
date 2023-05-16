@@ -70,7 +70,8 @@ public class PhoneDaoImpl implements PhoneDao {
     @Override
     public Optional<Phone> get(Long key) {
         return jdbcTemplate.query(FIND_PHONE_BY_ID, phoneResultSetExtractor, key)
-                .stream().findFirst();
+                .stream()
+                .findFirst();
     }
 
     @Override
