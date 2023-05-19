@@ -41,4 +41,9 @@ public class PhoneServiceImpl implements PhoneService {
     public Phone getById(Long phoneId) {
         return phoneDao.get(phoneId).orElseThrow(UnknownProductException::new);
     }
+
+    @Override
+    public Phone findPhoneByModel(String model) {
+        return phoneDao.findPhoneByModel(model).orElseThrow(UnknownProductException::new);
+    }
 }

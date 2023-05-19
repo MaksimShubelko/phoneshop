@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface PhoneDao {
     Optional<Phone> get(Long key);
 
+    Optional<Phone> findPhoneByModel(String model);
+
     void save(Phone phone);
 
     List<Phone> findAll(SearchingParamObject paramObject);

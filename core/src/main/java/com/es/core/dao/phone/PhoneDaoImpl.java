@@ -21,6 +21,10 @@ public class PhoneDaoImpl implements PhoneDao {
     public static final String FIND_PHONE_BY_ID = "SELECT phones.*, colors.id AS colorId, colors.code AS colorCode FROM phones " +
             "LEFT JOIN phone2color ON phone2color.phoneId = phones.id " +
             "LEFT JOIN colors ON colors.id = phone2color.colorId WHERE phones.id = ?";
+
+    public static final String FIND_PHONE_BY_MODEL = "SELECT phones.*, colors.id AS colorId, colors.code AS colorCode FROM phones " +
+            "LEFT JOIN phone2color ON phone2color.phoneId = phones.id " +
+            "LEFT JOIN colors ON colors.id = phone2color.colorId WHERE phones.id = ?";
     public static final String INSERT_PHONE = "INSERT INTO phones (id, brand, model, price, displaySizeInches, weightGr, lengthMm, " +
             "widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity, " +
             "displayTechnology, backCameraMegapixels, frontCameraMegapixels, " +
@@ -70,6 +74,13 @@ public class PhoneDaoImpl implements PhoneDao {
     @Override
     public Optional<Phone> get(Long key) {
         return jdbcTemplate.query(FIND_PHONE_BY_ID, phoneResultSetExtractor, key)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Phone> findPhoneByModel(String model) {
+        return jdbcTemplate.query(FIND_PHONE_BY_MODEL, phoneResultSetExtractor, model)
                 .stream()
                 .findFirst();
     }

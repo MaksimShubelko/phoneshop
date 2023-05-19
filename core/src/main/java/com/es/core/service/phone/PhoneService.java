@@ -12,4 +12,6 @@ public interface PhoneService {
     int getCountPages(String term);
 
     Phone getById(Long phoneId);
+
+    Phone findPhoneByModel(String model);
 }

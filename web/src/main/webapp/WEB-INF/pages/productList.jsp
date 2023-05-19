@@ -22,6 +22,9 @@
                 <h4>Cart</h4>
             </div>
         </a>
+        <a href="${pageContext.request.contextPath}/quickOrder">
+            Make quick order
+        </a>
         <div class="row m-auto pe-auto">
             <h6 class="col-sm-1">Items: </h6>
             <div class="col-sm-1" id="totalQuantity">${cart.totalQuantity} </div>
