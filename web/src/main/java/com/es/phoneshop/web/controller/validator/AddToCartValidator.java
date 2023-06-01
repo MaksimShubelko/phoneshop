@@ -54,7 +54,7 @@ public class AddToCartValidator implements Validator {
             } catch (UnknownProductException exception) {
                 errors.rejectValue("items[" + i + "].phoneModel", UNKNOWN_PRODUCT_ERROR_CODE, "Unknown product");
             } catch (InvalidQuantityException exception) {
-                errors.rejectValue("items[" + i + "].quantity", INVALID_QUANTITY_ERROR_CODE, "Please, enter quantity");
+                errors.rejectValue("items[" + i + "].quantity", INVALID_QUANTITY_ERROR_CODE, "Please, enter positive quantity");
             }
         }
     }
@@ -63,7 +63,7 @@ public class AddToCartValidator implements Validator {
         Phone phone = phoneDao.findPhoneByModel(quickOrderItemDto.getPhoneModel())
                 .orElseThrow(UnknownProductException::new);
         Long quantity = quickOrderItemDto.getQuantity();
-        if (quantity == null) {
+        if (quantity == null || quantity < 1) {
             throw new InvalidQuantityException();
         }
 

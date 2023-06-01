@@ -24,7 +24,7 @@ public class PhoneDaoImpl implements PhoneDao {
 
     public static final String FIND_PHONE_BY_MODEL = "SELECT phones.*, colors.id AS colorId, colors.code AS colorCode FROM phones " +
             "LEFT JOIN phone2color ON phone2color.phoneId = phones.id " +
-            "LEFT JOIN colors ON colors.id = phone2color.colorId WHERE phones.id = ?";
+            "LEFT JOIN colors ON colors.id = phone2color.colorId WHERE phones.model = ?";
     public static final String INSERT_PHONE = "INSERT INTO phones (id, brand, model, price, displaySizeInches, weightGr, lengthMm, " +
             "widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity, " +
             "displayTechnology, backCameraMegapixels, frontCameraMegapixels, " +

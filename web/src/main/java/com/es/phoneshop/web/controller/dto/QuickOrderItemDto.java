@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuickOrderItemDto {
-    @Size(max = 15, message = "Shouldn't be longer than 15 chars")
+    @Size(max = 30, message = "Shouldn't be longer than 15 chars")
     private String phoneModel;
     @Min(value = 1, message = "Should be positive")
     private Long quantity;

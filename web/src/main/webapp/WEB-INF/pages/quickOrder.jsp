@@ -35,7 +35,7 @@
             <p class="col-4">Quantity</p>
         </div>
         <c:forEach begin="0" end="7" varStatus="status" step="1">
-            <div class="row">
+            <div class="row p-3">
                 <c:set var="index" value="${status.index}"/>
                 <div class="col-3">
                     <form:input path="items[${index}].phoneModel"/>
